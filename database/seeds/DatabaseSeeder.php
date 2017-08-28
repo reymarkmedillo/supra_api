@@ -11,6 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call('UserTableSeeder');
+        $this->call(ApiClientSeeder::class);
+        $this->call(CaseTableSeeder::class);
+        $this->call(CaseGroupSeeder::class);
+        $this->call(AccessTokenSeeder::class);
+        $this->call(UserHighlightSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(UserProfileSeeder::class);
     }
 }

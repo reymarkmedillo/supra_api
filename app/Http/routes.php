@@ -14,3 +14,7 @@
 $app->get('/', function () use ($app) {
     return $app->version();
 });
+
+$app->post('search-case', [
+    'as' => 'searchCase', 'uses' => 'CaseController@searchCase'
+]);
