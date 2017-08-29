@@ -14,38 +14,53 @@ class CaseController extends Controller
 
     public function searchCase(Request $request) {
         $result = array();
+        $res_gr = array();
+        $res_title = array();
         if ($request->has('search')) {
             $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get();
-
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
+            }
+            // FILTER ONLY ID/GR
+            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('id')) {
+                $result['id'] = $res_gr;
+                return $result;
             }
 
             $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get();
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
+            // FILTER ONLY TITLE
+            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('title')) {
+                $result['title'] = $res_title;
+                return $result;
+            }
 
-            $result = array_merge($res_gr, $res_title);
+            $result['id'] = $res_gr;
+            $result['title'] = $res_title;
         }
 
         return response()->json($result);
     }
 
     private function makeCaseArray($arr = array()) {
+        $final = array();
         $res = array();
         if(count($arr)) {
             foreach ($arr as $key => $value) {
-                $res[$value->id]['id'] = $value->id;
-                $res[$value->id]['title'] = $value->title;
-                $res[$value->id]['scra'] = $value->scra;
-                $res[$value->id]['date'] = $value->date;
-                $res[$value->id]['topic'] = $value->topic;
-                $res[$value->id]['syllabus'] = $value->syllabus;
-                $res[$value->id]['body'] = $value->body;
-                $res[$value->id]['status'] = $value->status;
+                $res['id'] = $value->id;
+                $res['title'] = $value->title;
+                $res['scra'] = $value->scra;
+                $res['date'] = $value->date;
+                $res['topic'] = $value->topic;
+                $res['syllabus'] = $value->syllabus;
+                $res['body'] = $value->body;
+                $res['status'] = $value->status;
+                array_push($final, $res);
+                $res = array();
             }
-            return $res;
+            return $final;
         }
         return array();
     }
