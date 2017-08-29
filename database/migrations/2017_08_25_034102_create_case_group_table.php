@@ -14,7 +14,7 @@ class CreateCaseGroupTable extends Migration
     {
         Schema::create('case_group', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('case_id');
+            $table->integer('case_id');
             $table->text('refno');
             $table->mediumtext('title');
             $table->timestamps();

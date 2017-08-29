@@ -15,7 +15,7 @@ class CreateUserHighlightsTable extends Migration
         Schema::create('user_highlights', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->text('case_id');
+            $table->integer('case_id');
             $table->mediumText('text');
             $table->timestamps();
         });
