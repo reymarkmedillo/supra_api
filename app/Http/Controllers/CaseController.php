@@ -64,4 +64,9 @@ class CaseController extends Controller
         }
         return array();
     }
+
+    public function viewCase($id) {
+        $case = CaseModel::where('id', $id)->get();
+        return response()->json($case);
+    }
 }

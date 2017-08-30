@@ -4,6 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Route;
+use App\User;
+use App\Http\Middleware\BeforeMiddleware;
 
 class Authenticate
 {
@@ -37,8 +40,26 @@ class Authenticate
     {
         if ($this->auth->guard($guard)->guest()) {
             return response('Unauthorized.', 401);
+        } else {
+            if ($this->auth->check()) {
+                $access_token = $this->auth->guard($guard)->user();
+                if($request->route()[1]['uses'] != 'auth.refresh' && strtotime($access_token->expires_at) < time()) {
+                    return response()->json(['message' => 'Unauthorized'], 401);
+                }
+
+                $before_midware = new BeforeMiddleware();
+                if ($before_midware->api_client($request)->id != $access_token->api_client_id) {
+                    return response()->json(['message' => 'Unauthorized1.'], 401);
+                }
+
+                $user = User::find($access_token->user_id);
+                if ($guard == 'admin' && $user->role != 'admin') {
+                    return response()->json(['message' => 'Unauthorized3.'], 401);
+                }
+                return $next($request);
+            }
         }
 
-        return $next($request);
+        return response()->json(['message'  => "Unauthorized."],401);
     }
 }
