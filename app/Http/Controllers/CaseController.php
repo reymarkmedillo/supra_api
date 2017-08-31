@@ -16,7 +16,9 @@ class CaseController extends Controller
         $result = array();
         $res_gr = array();
         $res_title = array();
+        $res_topic = array();
         if ($request->has('search')) {
+            // GR
             $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get();
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
@@ -27,6 +29,7 @@ class CaseController extends Controller
                 return $result;
             }
 
+            // TITLE
             $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get();
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
@@ -37,8 +40,21 @@ class CaseController extends Controller
                 return $result;
             }
 
+            // TOPIC
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get();
+            if(count($search_topic)) {
+                $res_topic = $this->makeCaseArray($search_topic);
+            }
+            // FILTER ONLY TITLE
+            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('topic')) {
+                $result['topic'] = $res_topic;
+                return $result;
+            }
+
+
             $result['id'] = $res_gr;
             $result['title'] = $res_title;
+            $result['topic'] = $res_topic;
         }
 
         return response()->json($result);
