@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CaseModel;
+use App\UserHighlight;
 
 class CaseController extends Controller
 {
@@ -19,7 +20,7 @@ class CaseController extends Controller
         $res_topic = array();
         if ($request->has('search')) {
             // GR
-            $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get();
+            $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra']);
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
@@ -30,7 +31,7 @@ class CaseController extends Controller
             }
 
             // TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get();
+            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra']);
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
@@ -41,7 +42,7 @@ class CaseController extends Controller
             }
 
             // TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get();
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -50,7 +51,6 @@ class CaseController extends Controller
                 $result['topic'] = $res_topic;
                 return $result;
             }
-
 
             $result['id'] = $res_gr;
             $result['title'] = $res_title;
@@ -68,11 +68,7 @@ class CaseController extends Controller
                 $res['id'] = $value->id;
                 $res['title'] = $value->title;
                 $res['scra'] = $value->scra;
-                $res['date'] = $value->date;
                 $res['topic'] = $value->topic;
-                $res['syllabus'] = $value->syllabus;
-                $res['body'] = $value->body;
-                $res['status'] = $value->status;
                 array_push($final, $res);
                 $res = array();
             }
@@ -84,5 +80,23 @@ class CaseController extends Controller
     public function viewCase($id) {
         $case = CaseModel::where('id', $id)->get();
         return response()->json($case);
+    }
+
+    public function highlightCase(Request $request, $id) {
+        $find_case = CaseModel::find($id);
+        if($find_case) {
+            $this->validate($request, [
+                'user_id' => 'required',
+                'text' => 'required'
+            ]);
+            UserHighlight::create([
+                'user_id' => $request->input('user_id'),
+                'case_id' => $id,
+                'text' => $request->input('text')
+            ]);
+            return response()->json(['msg' => 'success']);
+        }
+
+        return response()->json(['msg' => 'error'], 500);
     }
 }
