@@ -16,8 +16,13 @@ $app->get('/', function () use ($app) {
 });
 
 $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
+    // SEARCH
     $app->post('v1/search-case', ['as' => 'searchCase', 'uses' => 'CaseController@searchCase']);
+    // VIEW
     $app->get('v1/view-case/{case_id}', ['as' => 'viewCase', 'uses' => 'CaseController@viewCase']);
+    // HIGHLIGHT
     $app->post('v1/highlight-case/{case_id}', ['as' => 'highlightCase', 'uses' => 'CaseController@highlightCase']);
+    $app->get('v1/highlights/{user_id}', ['as' => 'getUserHighlights', 'uses' => 'CaseController@getUserHighlights']);
+    // BOOKMARK
     $app->post('v1/bookmark-case', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
 });

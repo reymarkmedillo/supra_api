@@ -18,6 +18,9 @@ class CaseController extends Controller
         $res_gr = array();
         $res_title = array();
         $res_topic = array();
+        $this->validate($request, [
+            'search' => 'required'
+        ]);
         if ($request->has('search')) {
             // GR
             $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra']);
@@ -95,6 +98,15 @@ class CaseController extends Controller
                 'text' => $request->input('text')
             ]);
             return response()->json(['msg' => 'success']);
+        }
+
+        return response()->json(['msg' => 'error'], 500);
+    }
+
+    public function getUserHighlights(Request $request, $id) {
+        $user_highlight = UserHighlight::where('user_id', $id)->get();
+        if($user_highlight) {
+            return response()->json(['highlights' => $user_highlight]);
         }
 
         return response()->json(['msg' => 'error'], 500);
