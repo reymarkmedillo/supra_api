@@ -104,9 +104,35 @@ class CaseController extends Controller
     }
 
     public function getUserHighlights(Request $request, $id) {
-        $user_highlight = UserHighlight::where('user_id', $id)->get();
+        $user_highlight = UserHighlight::where('user_id', $id)->whereNotNull('text')->where('text', '!=', '')->get();
         if($user_highlight) {
             return response()->json(['highlights' => $user_highlight]);
+        }
+
+        return response()->json(['msg' => 'error'], 500);
+    }
+
+    public function bookmarkCase(Request $request, $id) {
+        $find_case = CaseModel::find($id);
+        if($find_case) {
+            $this->validate($request, [
+                'user_id' => 'required'
+            ]);
+            UserHighlight::create([
+                'user_id' => $request->input('user_id'),
+                'case_id' => $id,
+                'text' => ''
+            ]);
+
+            return response()->json(['msg' => 'success']);
+        }
+        return response()->json(['msg'=>'error'], 500);
+    }
+
+    public function getBookmarks(Request $request, $id) {
+        $bookmarks = UserHighlight::where('user_id', $id)->where('text', '')->get();
+        if($bookmarks) {
+            return response()->json(['bookmarks' => $bookmarks]);
         }
 
         return response()->json(['msg' => 'error'], 500);
