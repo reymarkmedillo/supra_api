@@ -55,9 +55,8 @@ class CaseController extends Controller
                 return $result;
             }
 
-            $result['id'] = $res_gr;
-            $result['title'] = $res_title;
-            $result['topic'] = $res_topic;
+            $merge_arr = array_merge($res_gr,$res_title,$res_topic);
+            $result = $this->makeUniqueIdArray($merge_arr);
         }
 
         return response()->json($result);
@@ -136,5 +135,17 @@ class CaseController extends Controller
         }
 
         return response()->json(['msg' => 'error'], 500);
+    }
+
+    public function makeUniqueIdArray($arr) {
+        $hash = array();
+        $ret = array();
+        foreach ($arr as $cases) {
+            if(!isset($hash[$cases['id']])) {
+                array_push($ret, $cases);
+            }
+            $hash[$cases['id']] = $cases;
+        }
+        return $ret;
     }
 }
