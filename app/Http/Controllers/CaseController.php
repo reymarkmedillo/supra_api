@@ -55,6 +55,9 @@ class CaseController extends Controller
                 return $result;
             }
 
+            // ADD SEARCH SYLLABUS
+            // ADD SEARCH CASE_REFERENCES TABLE
+
             $merge_arr = array_merge($res_gr,$res_title,$res_topic);
             $result = $this->makeUniqueIdArray($merge_arr);
         }
