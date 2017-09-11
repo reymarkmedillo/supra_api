@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\CaseModel;
 use App\UserHighlight;
+use App\CaseReference;
 
 class CaseController extends Controller
 {
@@ -18,12 +19,14 @@ class CaseController extends Controller
         $res_gr = array();
         $res_title = array();
         $res_topic = array();
+        $res_syllabus = array();
+        $res_case_refs = array();
         $this->validate($request, [
             'search' => 'required'
         ]);
         if ($request->has('search')) {
             // GR
-            $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra']);
+            $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra','syllabus']);
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
@@ -34,7 +37,7 @@ class CaseController extends Controller
             }
 
             // TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra']);
+            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra','syllabus']);
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
@@ -45,7 +48,7 @@ class CaseController extends Controller
             }
 
             // TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra']);
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra','syllabus']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -55,10 +58,26 @@ class CaseController extends Controller
                 return $result;
             }
 
-            // ADD SEARCH SYLLABUS
-            // ADD SEARCH CASE_REFERENCES TABLE
+            // SYLLABUS
+            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra','syllabus']);
+            if(count($search_syllabus)) {
+                $res_syllabus = $this->makeCaseArray($search_syllabus);
+            }
+            // --> FILTER ONLY SYLLABUS
+            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('syllabus')) {
+                $result['syllabus'] = $res_syllabus;
+                return $result;
+            }
 
-            $merge_arr = array_merge($res_gr,$res_title,$res_topic);
+            // CASES WITH MULTIPLE GR NUMBERS
+            $search_case_refs = CaseReference::where('sub_case_id', $request->input('search'))
+            ->leftJoin('cases as a', 'a.id','=','case_references.case_id')
+            ->get(['case_references.sub_case_id as id','title','topic','scra','syllabus']);
+            if(count($search_case_refs)) {
+                $res_case_refs = $this->makeCaseArray($search_case_refs);
+            }
+
+            $merge_arr = array_merge($res_gr, $res_title, $res_topic, $res_syllabus, $res_case_refs);
             $result = $this->makeUniqueIdArray($merge_arr);
         }
 
@@ -74,6 +93,7 @@ class CaseController extends Controller
                 $res['title'] = $value->title;
                 $res['scra'] = $value->scra;
                 $res['topic'] = $value->topic;
+                $res['syllabus'] = $value->syllabus;
                 array_push($final, $res);
                 $res = array();
             }
