@@ -98,4 +98,27 @@ $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
 
+/*
+|--------------------------------------------------------------------------
+| Custom Configuration Variables
+|--------------------------------------------------------------------------
+*/
+config(array(
+    'define' => array(
+        'auth_types' => array('google','facebook','apple','normal'),
+        'token_time' => array(
+            'access' => array(
+                'days' => 0,
+                'hours' => 4,
+                'minutes' => 0
+            ),
+            'refresh' => array(
+                'days' => 1,
+                'hours' => 0,
+                'minutes' => 0
+            )
+        )
+    )
+));
+
 return $app;

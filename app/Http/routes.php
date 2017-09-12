@@ -14,7 +14,7 @@
 $app->get('/', function () use ($app) {
     return $app->version();
 });
-
+// CASES
 $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
     // SEARCH
     $app->post('v1/search-case', ['as' => 'searchCase', 'uses' => 'CaseController@searchCase']);
@@ -26,4 +26,10 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // BOOKMARK
     $app->post('v1/bookmark-case/{case_id}', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
+});
+
+// AUTH
+$app->group(['middleware' => ['before'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
+    // LOGIN
+    $app->post('v1/auth/login', ['as' => 'postLogin', 'uses' => 'AuthController@postLogin']);
 });
