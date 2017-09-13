@@ -32,4 +32,6 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
 $app->group(['middleware' => ['before'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
     // LOGIN
     $app->post('v1/auth/login', ['as' => 'postLogin', 'uses' => 'AuthController@postLogin']);
+    // REGISTER
+    $app->post('v1/auth/register', ['as' => 'postRegister', 'uses' => 'AuthController@postRegister']);
 });
