@@ -104,6 +104,16 @@ class AuthController extends Controller
         $res = array();
         $tokens     = $this->user->generateToken();
         $client    = ApiClient::where('name', $request->input('client_name'))->where('secret', $request->input('client_secret'))->firstOrFail();
+        $profile = UserProfile::where('user_id', $user->id)->leftJoin('users as a', 'a.id', '=', 'user_profile.user_id')->first([
+            'user_profile.id',
+            'user_profile.user_id',
+            'user_profile.first_name',
+            'user_profile.last_name',
+            'user_profile.address',
+            'a.email',
+            'user_profile.payment_method',
+            'user_profile.premium'
+        ]);
 
 
         AccessToken::create([
@@ -115,11 +125,12 @@ class AuthController extends Controller
             'refresh_expires_at' => $tokens['refresh_token_expired_date']
         ]);
 
+        $res['result'] = 'success';
         $res['access_token'] = ($request->has('token') && $request->input('type')!='normal'?$request->input('token'):$tokens['api_token']);
         $res['expired_date'] = $tokens['expired_date'];
         $res['refresh_token'] = $tokens['refresh_token'];
         $res['refresh_token_expired_date'] = $tokens['refresh_token_expired_date'];
-        $res['user'] = $user; // get from profiles table
+        $res['user_profile'] = $profile;
         return $res;
     }
 

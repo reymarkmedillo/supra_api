@@ -14,8 +14,9 @@
 $app->get('/', function () use ($app) {
     return $app->version();
 });
-// CASES
+// MUST BE LOGGED IN ROUTES
 $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
+    // ** CASES **
     // SEARCH
     $app->post('v1/search-case', ['as' => 'searchCase', 'uses' => 'CaseController@searchCase']);
     // VIEW
@@ -26,10 +27,17 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // BOOKMARK
     $app->post('v1/bookmark-case/{case_id}', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
+
+    // ** USER **
+    // PROFILE
+    $app->post('v1/user/update/{user_id}', ['as' => 'updateProfile', 'uses' => 'UserController@updateProfile']);
+    $app->get('v1/user/view/{user_id}', ['as' => 'viewProfile', 'uses' => 'UserController@viewProfile']);
 });
 
-// AUTH
+
+// NOT LOGGED IN ROUTES
 $app->group(['middleware' => ['before'], 'namespace' => 'App\Http\Controllers'], function() use($app) {
+    // ** AUTH **
     // LOGIN
     $app->post('v1/auth/login', ['as' => 'postLogin', 'uses' => 'AuthController@postLogin']);
     // REGISTER
