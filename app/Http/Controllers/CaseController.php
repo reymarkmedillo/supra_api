@@ -26,18 +26,18 @@ class CaseController extends Controller
         ]);
         if ($request->has('search')) {
             // GR
-            $search_GR = CaseModel::where('id','like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra','syllabus']);
+            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus']);
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
-            // FILTER ONLY ID/GR
-            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('id')) {
-                $result['id'] = $res_gr;
+            // FILTER ONLY GR
+            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('grno')) {
+                $result['grno'] = $res_gr;
                 return $result;
             }
 
             // TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','title','topic','scra','syllabus']);
+            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus']);
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
@@ -48,7 +48,7 @@ class CaseController extends Controller
             }
 
             // TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra','syllabus']);
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -59,11 +59,11 @@ class CaseController extends Controller
             }
 
             // SYLLABUS
-            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','title','topic','scra','syllabus']);
+            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus']);
             if(count($search_syllabus)) {
                 $res_syllabus = $this->makeCaseArray($search_syllabus);
             }
-            // --> FILTER ONLY SYLLABUS
+            // FILTER ONLY SYLLABUS
             if($request->has('filter') && strtolower($request->input('filter')) == strtolower('syllabus')) {
                 $result['syllabus'] = $res_syllabus;
                 return $result;
@@ -72,7 +72,7 @@ class CaseController extends Controller
             // CASES WITH MULTIPLE GR NUMBERS
             $search_case_refs = CaseReference::where('sub_case_id', $request->input('search'))
             ->leftJoin('cases as a', 'a.id','=','case_references.case_id')
-            ->get(['case_references.sub_case_id as id','title','topic','scra','syllabus']);
+            ->get(['case_references.sub_case_id as id','grno','title','topic','scra','syllabus']);
             if(count($search_case_refs)) {
                 $res_case_refs = $this->makeCaseArray($search_case_refs);
             }
@@ -90,6 +90,7 @@ class CaseController extends Controller
         if(count($arr)) {
             foreach ($arr as $key => $value) {
                 $res['id'] = $value->id;
+                $res['grno'] = $value->grno;
                 $res['title'] = $value->title;
                 $res['scra'] = $value->scra;
                 $res['topic'] = $value->topic;
