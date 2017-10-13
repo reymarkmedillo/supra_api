@@ -16,18 +16,22 @@ class AuthController extends Controller
     }
 
     public function postLogin(Request $request) {
-        $this->validate($request, [
+        $validator = $this->validate($request, [
             'type' => 'required',
             'email' => 'required'
         ]);
 
-        $user = User::where('email', $request->input('email'))->where('auth_type', $request->input('type'))->first();
+        $user = User::where('email', $request->input('email'))->first();
         if(!$user) {
-            return response()->json(['msg'=> 'error']);
+            return response()->json(['msg'=> array('Record not found.')],422);
+        } else {
+            if($user->auth_type != $request->input('type')) {
+                return response()->json(['msg'=> array('Invalid login.')],422);
+            }
         }
 
         if(!in_array($request->input('type'), config('define.auth_types') )) {
-            return response()->json(['msg'=>'error']);
+            return response()->json(['msg'=>array('There is a problem with your request.')],422);
         } else {
             if($request->input('type') == 'normal') { // NORMAL LOGIN
                 $this->validate($request, [
@@ -36,7 +40,7 @@ class AuthController extends Controller
 
                 $check_password = app('hash')->check($request->input('password'), $user->password);
                 if(!$check_password) {
-                    return response()->json(['msg'=> 'incorrect password']);
+                    return response()->json(['msg'=> array('Wrong Password.')],422);
                 }
 
                 $tokens = $this->saveTokens($user, $request);
