@@ -81,7 +81,7 @@ class CaseController extends Controller
             $result = $this->makeUniqueIdArray($merge_arr);
         }
 
-        return response()->json($result);
+        return response()->json($result,200);
     }
 
     private function makeCaseArray($arr = array()) {
@@ -171,5 +171,10 @@ class CaseController extends Controller
             $hash[$cases['id']] = $cases;
         }
         return $ret;
+    }
+
+    public function getCategory($parent, $level) {
+        $categories = \App\Category::where('parent_id', $parent)->where('level', $level)->get();
+        return response()->json(['categories' => $categories]);
     }
 }

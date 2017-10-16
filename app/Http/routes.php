@@ -27,6 +27,8 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // BOOKMARK
     $app->post('v1/bookmark-case/{case_id}', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
+    // CATEGORY
+    $app->get('v1/categories/{parent}/{level}', ['as' => 'getCategory', 'uses' => 'CaseController@getCategory']);
 
     // ** USER **
     // PROFILE
