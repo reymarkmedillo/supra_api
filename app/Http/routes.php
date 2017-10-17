@@ -19,6 +19,8 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // ** CASES **
     // SEARCH
     $app->post('v1/search-case', ['as' => 'searchCase', 'uses' => 'CaseController@searchCase']);
+    // CREATE
+    $app->post('v1/create-case', ['as' => 'createCase', 'uses' => 'CaseController@createCase']);
     // VIEW
     $app->get('v1/view-case/{case_id}', ['as' => 'viewCase', 'uses' => 'CaseController@viewCase']);
     // HIGHLIGHT

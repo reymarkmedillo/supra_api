@@ -177,4 +177,21 @@ class CaseController extends Controller
         $categories = \App\Category::where('parent_id', $parent)->where('level', $level)->get();
         return response()->json(['categories' => $categories]);
     }
+
+    public function createCase(Request $request) {
+        \Log::info(json_encode($request->all()));
+        $case = new CaseModel;
+        $case->title = $request->input('title');
+        $case->grno = $request->input('gr');
+        $case->scra = $request->input('scra');
+        $case->date = date('Y-m-d', strtotime($request->input('date')));
+        $case->topic = $request->input('topic');
+        $case->syllabus = $request->input('syllabus');
+        $case->body = $request->input('body');
+        $case->status = "reinstated";
+
+        $case->save();
+
+        return response()->json(['message' => 'Saved Successfully.']);
+    }
 }
