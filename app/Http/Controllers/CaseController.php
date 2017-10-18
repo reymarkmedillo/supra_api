@@ -178,9 +178,8 @@ class CaseController extends Controller
         return response()->json(['categories' => $categories]);
     }
 
-    public function createCase(Request $request) {
-        \Log::info(json_encode($request->all()));
-        $case = new CaseModel;
+    public function createDraftCase(Request $request) {
+        $case = new \App\CaseDraft;
         $case->title = $request->input('title');
         $case->grno = $request->input('gr');
         $case->scra = $request->input('scra');
@@ -191,7 +190,76 @@ class CaseController extends Controller
         $case->status = "reinstated";
 
         $case->save();
-
         return response()->json(['message' => 'Saved Successfully.']);
+    }
+
+    public function updateDraftCase(Request $request, $case_id) {
+        $case = \App\CaseDraft::find($case_id);
+        if(!$case) {
+            return response()->json(['message' => 'Record not found.']);
+        }
+        if($request->has('title')) {
+            $case->title = $request->input('title');
+        }
+        if($request->has('gr')) {
+            $case->grno = $request->input('gr');
+        }
+        if($request->has('scra')) {
+            $case->scra = $request->input('scra');
+        }
+        if($request->has('date')) {
+            $case->date = date('Y-m-d', strtotime($request->input('date')));
+        }
+        if($request->has('topic')) {
+            $case->topic = $request->input('topic');
+        }
+        if($request->has('syllabus')) {
+            $case->syllabus = $request->input('syllabus');
+        }
+        if($request->has('body')) {
+            $case->body = $request->input('body');
+        }
+        $case->status = "reinstated";
+
+        $case->save();
+        return response()->json(['message' => 'Updated Successfully.']);
+    }
+
+    public function approvalDraftCase(Request $request, $case_id) {
+        $case = \App\CaseDraft::find($case_id);
+        $case_tranfer = new CaseModel;
+        if(!$case) {
+            return response()->json(['message' => 'Record not found.']);
+        }
+
+        if($request->has('approval')) {
+            if($request->input('approval') == 1) {
+                $case_tranfer->title = $case->title;
+                $case_tranfer->grno = $case->grno;
+                $case_tranfer->scra = $case->scra;
+                $case_tranfer->date = $case->date;
+                $case_tranfer->topic = $case->topic;
+                $case_tranfer->syllabus = $case->syllabus;
+                $case_tranfer->body = $case->body;
+                $case_tranfer->status = $case->status;
+
+                $case_tranfer->save();
+                $case->delete();
+                return response()->json(['message' => 'Case Approved Successfully.']);
+            } elseif($request->input('approval') == 0) {
+                $case->deleted_at = \Carbon\Carbon::now();
+                $case->save();
+                return response()->json(['message' => 'Case Disapproved Successfully.']);
+            }
+        }
+
+        return response()->json(['message' => 'There is some problem with your request.']);
+    }
+
+    public function listDraftCase() {
+        $cases = array();
+        $cases = \App\CaseDraft::all();
+
+        return response()->json(['cases' => $cases]);
     }
 }

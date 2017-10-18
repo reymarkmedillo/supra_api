@@ -23,6 +23,7 @@ class CreateCaseTable extends Migration
             $table->longText('body');
             $table->text('status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

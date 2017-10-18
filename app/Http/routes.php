@@ -19,8 +19,6 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // ** CASES **
     // SEARCH
     $app->post('v1/search-case', ['as' => 'searchCase', 'uses' => 'CaseController@searchCase']);
-    // CREATE
-    $app->post('v1/create-case', ['as' => 'createCase', 'uses' => 'CaseController@createCase']);
     // VIEW
     $app->get('v1/view-case/{case_id}', ['as' => 'viewCase', 'uses' => 'CaseController@viewCase']);
     // HIGHLIGHT
@@ -31,6 +29,15 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
     // CATEGORY
     $app->get('v1/categories/{parent}/{level}', ['as' => 'getCategory', 'uses' => 'CaseController@getCategory']);
+    // ** DRAFT CASES **
+    //LIST
+    $app->get('v1/drafts/list-case', ['as' => 'listDraftCase', 'uses' => 'CaseController@listDraftCase']);
+    // CREATE
+    $app->post('v1/drafts/create-case', ['as' => 'createDraftCase', 'uses' => 'CaseController@createDraftCase']);
+    // UPDATE
+    $app->post('v1/drafts/update-case/{case_id}', ['as' => 'updateDraftCase', 'uses' => 'CaseController@updateDraftCase']);
+    // APPROVE/DISAPPROVE
+    $app->post('v1/drafts/approval-case/{case_id}', ['as' => 'approvalDraftCase', 'uses' => 'CaseController@approvalDraftCase']);
 
     // ** USER **
     // PROFILE
