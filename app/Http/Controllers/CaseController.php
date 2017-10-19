@@ -181,6 +181,7 @@ class CaseController extends Controller
     public function createDraftCase(Request $request) {
         $case = new \App\CaseDraft;
         $case->title = $request->input('title');
+        $case->short_title = $request->input('short_title');
         $case->grno = $request->input('gr');
         $case->scra = $request->input('scra');
         $case->date = date('Y-m-d', strtotime($request->input('date')));
@@ -200,6 +201,9 @@ class CaseController extends Controller
         }
         if($request->has('title')) {
             $case->title = $request->input('title');
+        }
+        if($request->has('short_title')) {
+            $case->short_title = $request->input('short_title');
         }
         if($request->has('gr')) {
             $case->grno = $request->input('gr');
