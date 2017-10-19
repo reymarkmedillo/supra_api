@@ -115,10 +115,10 @@ class AuthController extends Controller
             'user_profile.last_name',
             'user_profile.address',
             'a.email',
+            'a.role',
             'user_profile.payment_method',
             'user_profile.premium'
         ]);
-
 
         AccessToken::create([
             'user_id' => $user->id,
@@ -134,7 +134,15 @@ class AuthController extends Controller
         $res['expired_date'] = $tokens['expired_date'];
         $res['refresh_token'] = $tokens['refresh_token'];
         $res['refresh_token_expired_date'] = $tokens['refresh_token_expired_date'];
-        $res['user_profile'] = $profile;
+        $res['user_profile']['id'] = $profile->id;
+        $res['user_profile']['user_id'] = $profile->user_id;
+        $res['user_profile']['first_name'] = $profile->first_name;
+        $res['user_profile']['last_name'] = $profile->last_name;
+        $res['user_profile']['address'] = $profile->address;
+        $res['user_profile']['email'] = $profile->email;
+        $res['user_profile']['payment_method'] = $profile->payment_method;
+        $res['user_profile']['premium'] = $profile->premium;
+        $res['user_profile']['role'] = $profile->role;
         return $res;
     }
 

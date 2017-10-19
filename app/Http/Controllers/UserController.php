@@ -14,6 +14,7 @@ class UserController extends Controller
     }
 
     public function updateProfile(Request $request, $user_id) {
+        \Log::info(json_encode($request->all()));
         $user = UserProfile::where('user_id', $user_id)->first();
         $auth_user = User::find($user_id);
 
@@ -41,9 +42,24 @@ class UserController extends Controller
             $auth_user->password = app('hash')->make($request->input('password'));
             $auth_user->save();
         }
+        if($request->has('email')) {
+            $auth_user->email = $request->input('email');
+            $auth_user->save();
+        }
 
         $user->save();
-        return response()->json(['msg'=>'success']);
+
+        $profile = array();
+        $profile['id'] = $user->id;
+        $profile['user_id'] = $user->user_id;
+        $profile['first_name'] = $user->first_name;
+        $profile['last_name'] = $user->last_name;
+        $profile['address'] = $user->address;
+        $profile['email'] = $auth_user->email;
+        $profile['payment_method'] = $user->payment_method;
+        $profile['premium'] = $user->premium;
+        $profile['role'] = $auth_user->role;
+        return response()->json(['msg'=>'success', 'user_profile' => $profile]);
     }
 
     public function viewProfile($user_id) {
