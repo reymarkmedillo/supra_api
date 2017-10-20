@@ -81,4 +81,29 @@ class UserController extends Controller
 
         return response()->json($user);
     }
+
+    public function getAllUsers() {
+        $hash_allusers = array();
+        $user = \App\User::find(\Auth::user()->user_id);
+
+        if($user->role != 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $all_users = \App\User::all();
+        foreach ($all_users as $user) {
+            $approve = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 1)->count();
+            $pending = \App\CaseDraft::where('createdBy', $user->id)->whereNull('deleted_at')->where('approved', 0)->count();
+            $disapprove = \App\CaseDraft::where('createdBy', $user->id)->whereNotNull('deleted_at')->where('approved',0)->count();
+
+            $temp_user = $user->toArray();
+            $temp_user['approve'] = $approve;
+            $temp_user['pending'] = $pending;
+            $temp_user['disapprove'] = $disapprove;
+
+            $hash_allusers[] = $temp_user;
+        }
+
+        return response()->json($hash_allusers);
+    }
 }

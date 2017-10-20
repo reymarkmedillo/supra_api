@@ -248,7 +248,9 @@ class CaseController extends Controller
                 $case_tranfer->status = $case->status;
 
                 $case_tranfer->save();
-                $case->delete();
+                
+                $case->approved = 1;
+                $case->save();
                 return response()->json(['message' => 'Case Approved Successfully.']);
             } elseif($request->input('approval') == 0) {
                 $case->deleted_at = \Carbon\Carbon::now();
@@ -262,7 +264,14 @@ class CaseController extends Controller
 
     public function listDraftCase() {
         $cases = array();
-        $cases = \App\CaseDraft::all();
+        $user = \App\User::find(\Auth::user()->user_id);
+
+        if($user->role == 'admin') {
+            $cases = \App\CaseDraft::all();
+        } else {
+            $cases = \App\CaseDraft::where('createdBy', $user->id)->get();
+        }
+        
 
         return response()->json(['cases' => $cases]);
     }
