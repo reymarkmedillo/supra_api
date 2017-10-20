@@ -15,6 +15,7 @@ class CreateCaseTable extends Migration
         Schema::create('cases', function (Blueprint $table) {
             $table->increments('id');
             $table->mediumText('title');
+            $table->mediumText('short_title');
             $table->text('scra');
             $table->string('grno');
             $table->date('date');
@@ -22,6 +23,7 @@ class CreateCaseTable extends Migration
             $table->longText('syllabus');
             $table->longText('body');
             $table->text('status');
+            $table->integer('createdBy');
             $table->timestamps();
             $table->softDeletes();
         });
