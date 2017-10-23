@@ -188,6 +188,7 @@ class CaseController extends Controller
         $case->topic = $request->input('topic');
         $case->syllabus = $request->input('syllabus');
         $case->body = $request->input('body');
+        $case->full_txt = $request->input('fulltxt');
         $case->status = "reinstated";
 
         $case->save();
@@ -223,6 +224,9 @@ class CaseController extends Controller
         if($request->has('body')) {
             $case->body = $request->input('body');
         }
+        if($request->has('full_txt')) {
+            $case->body = $request->input('fulltxt');
+        }
         $case->status = "reinstated";
 
         $case->save();
@@ -245,6 +249,7 @@ class CaseController extends Controller
                 $case_tranfer->topic = $case->topic;
                 $case_tranfer->syllabus = $case->syllabus;
                 $case_tranfer->body = $case->body;
+                $case_tranfer->full_txt = $case->full_txt;
                 $case_tranfer->status = $case->status;
 
                 $case_tranfer->save();

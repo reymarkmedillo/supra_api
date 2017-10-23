@@ -22,6 +22,7 @@ class CreateCaseTable extends Migration
             $table->mediumText('topic');
             $table->longText('syllabus');
             $table->longText('body');
+            $table->text('full_txt');
             $table->text('status');
             $table->integer('createdBy');
             $table->timestamps();
