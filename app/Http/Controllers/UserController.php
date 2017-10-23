@@ -104,6 +104,6 @@ class UserController extends Controller
             $hash_allusers[] = $temp_user;
         }
 
-        return response()->json($hash_allusers);
+        return response()->json(['users'=> $hash_allusers]);
     }
 }
