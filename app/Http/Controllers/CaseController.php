@@ -273,9 +273,9 @@ class CaseController extends Controller
         $user = \App\User::find(\Auth::user()->user_id);
 
         if($user->role == 'admin') {
-            $cases = \App\CaseDraft::all();
+            $cases = \App\CaseDraft::where('approved', 0)->get();
         } else {
-            $cases = \App\CaseDraft::where('createdBy', $user->id)->get();
+            $cases = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 0)->get();
         }
         
 
