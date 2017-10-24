@@ -189,6 +189,7 @@ class CaseController extends Controller
         $case->syllabus = $request->input('syllabus');
         $case->body = $request->input('body');
         $case->full_txt = $request->input('fulltxt');
+        $case->createdBy = \Auth::user()->user_id;
         $case->status = "reinstated";
 
         $case->save();
