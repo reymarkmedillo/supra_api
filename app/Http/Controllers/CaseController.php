@@ -127,7 +127,21 @@ class CaseController extends Controller
     }
 
     public function getUserHighlights(Request $request, $id) {
-        $user_highlight = UserHighlight::where('user_id', $id)->whereNotNull('text')->where('text', '!=', '')->get();
+        $user_highlight = UserHighlight::where('user_id', $id)
+        ->leftJoin('cases as c', 'c.id','=','user_highlights.case_id')
+        ->whereNotNull('text')
+        ->where('text', '!=', '')
+        ->get([
+            'user_highlights.id',
+            'user_id',
+            'case_id',
+            'text',
+            'user_highlights.created_at',
+            'user_highlights.updated_at',
+            'c.grno',
+            'c.short_title',
+            'c.title'
+        ]);
         if($user_highlight) {
             return response()->json(['highlights' => $user_highlight]);
         }
