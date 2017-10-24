@@ -70,9 +70,13 @@ class CaseController extends Controller
             }
 
             // CASES WITH MULTIPLE GR NUMBERS
-            $search_case_refs = CaseReference::where('sub_case_id', $request->input('search'))
-            ->leftJoin('cases as a', 'a.id','=','case_references.case_id')
-            ->get(['case_references.sub_case_id as id','grno','title','topic','scra','syllabus']);
+            // $search_case_refs = CaseReference::where('sub_case_id', $request->input('search'))
+            // ->leftJoin('cases as a', 'a.id','=','case_references.case_id')
+            // ->get(['case_references.sub_case_id as id','grno','title','topic','scra','syllabus']);
+
+            $search_case_refs = \App\CaseGroup::where('refno', 'like', '%'.$request->input('search').'%')
+            ->leftJoin('cases as a', 'a.id','=','case_group.case_id')
+            ->get(['case_group.case_id as id', 'case_group.refno as grno','case_group.title', 'topic','scra','syllabus','a.grno as parent_grno']);
             if(count($search_case_refs)) {
                 $res_case_refs = $this->makeCaseArray($search_case_refs);
             }
@@ -95,6 +99,9 @@ class CaseController extends Controller
                 $res['scra'] = $value->scra;
                 $res['topic'] = $value->topic;
                 $res['syllabus'] = $value->syllabus;
+                if(isset($value->parent_grno)) {
+                    $res['parent_grno'] = $value->parent_grno;
+                }
                 array_push($final, $res);
                 $res = array();
             }
