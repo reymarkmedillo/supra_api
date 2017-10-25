@@ -99,6 +99,7 @@ class CaseController extends Controller
                 $res['scra'] = $value->scra;
                 $res['topic'] = $value->topic;
                 $res['syllabus'] = $value->syllabus;
+                $res['full_txt'] = $value->full_txt;
                 if(isset($value->parent_grno)) {
                     $res['parent_grno'] = $value->parent_grno;
                 }
