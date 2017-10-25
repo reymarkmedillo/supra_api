@@ -25,8 +25,8 @@ class CaseController extends Controller
             'search' => 'required'
         ]);
         if ($request->has('search')) {
-            // GR
-            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus']);
+            // *GR
+            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','full_txt']);
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
@@ -36,8 +36,8 @@ class CaseController extends Controller
                 return $result;
             }
 
-            // TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus']);
+            // *TITLE
+            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','full_txt']);
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
@@ -47,8 +47,8 @@ class CaseController extends Controller
                 return $result;
             }
 
-            // TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus']);
+            // *TOPIC
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','full_txt']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -58,8 +58,8 @@ class CaseController extends Controller
                 return $result;
             }
 
-            // SYLLABUS
-            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus']);
+            // *SYLLABUS
+            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','full_txt']);
             if(count($search_syllabus)) {
                 $res_syllabus = $this->makeCaseArray($search_syllabus);
             }
@@ -69,14 +69,14 @@ class CaseController extends Controller
                 return $result;
             }
 
-            // CASES WITH MULTIPLE GR NUMBERS
+            // *MULTIPLE GR NUMBERS
             // $search_case_refs = CaseReference::where('sub_case_id', $request->input('search'))
             // ->leftJoin('cases as a', 'a.id','=','case_references.case_id')
             // ->get(['case_references.sub_case_id as id','grno','title','topic','scra','syllabus']);
 
             $search_case_refs = \App\CaseGroup::where('refno', 'like', '%'.$request->input('search').'%')
             ->leftJoin('cases as a', 'a.id','=','case_group.case_id')
-            ->get(['case_group.case_id as id', 'case_group.refno as grno','case_group.title', 'topic','scra','syllabus','a.grno as parent_grno']);
+            ->get(['a.id', 'a.grno','a.title', 'a.topic','a.scra','a.syllabus','a.full_txt']);
             if(count($search_case_refs)) {
                 $res_case_refs = $this->makeCaseArray($search_case_refs);
             }
@@ -100,8 +100,10 @@ class CaseController extends Controller
                 $res['topic'] = $value->topic;
                 $res['syllabus'] = $value->syllabus;
                 $res['full_txt'] = $value->full_txt;
-                if(isset($value->parent_grno)) {
-                    $res['parent_grno'] = $value->parent_grno;
+                $child_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title']);
+
+                if(count($child_grs)) {
+                    $res['child_grno'] = $child_grs;
                 }
                 array_push($final, $res);
                 $res = array();
