@@ -42,6 +42,7 @@ class Authenticate
             return response()->json(['message' => 'Unauthorized'], 401);
         } else {
             if ($this->auth->check()) {
+                // this area is not yet used
                 $access_token = $this->auth->guard($guard)->user();
                 if($request->route()[1]['uses'] != 'auth.refresh' && strtotime($access_token->expires_at) < time()) {
                     return response()->json(['message' => 'Unauthorized'], 401);
@@ -52,7 +53,8 @@ class Authenticate
                     return response()->json(['message' => 'Unauthorized.'], 401);
                 }
 
-                $user = User::find($access_token->user_id);
+                // this area is not yet used
+                $user = User::find($access_token->user_id); 
                 if ($guard == 'admin' && $user->role != 'admin') {
                     return response()->json(['message' => 'Unauthorized.'], 401);
                 }

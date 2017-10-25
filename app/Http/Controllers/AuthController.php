@@ -44,6 +44,8 @@ class AuthController extends Controller
                 }
 
                 $tokens = $this->saveTokens($user, $request);
+                // clear expired tokens
+                AccessToken::where('expires_at','<', \Carbon\Carbon::now())->delete();
                 return response()->json($tokens);
 
             } else { // THIRD-PARTY LOGIN 
