@@ -204,19 +204,33 @@ class CaseController extends Controller
 
     public function createDraftCase(Request $request) {
         $case = new \App\CaseDraft;
-        $case->title = $request->input('title');
-        $case->short_title = $request->input('short_title');
-        $case->grno = $request->input('gr');
-        $case->scra = $request->input('scra');
-        $case->date = date('Y-m-d', strtotime($request->input('date')));
-        $case->topic = $request->input('topic');
-        $case->syllabus = $request->input('syllabus');
-        $case->body = $request->input('body');
-        $case->full_txt = $request->input('fulltxt');
-        $case->createdBy = \Auth::user()->user_id;
-        $case->status = "reinstated";
+        $case_group = new \App\CaseGroupDraft;
 
-        $case->save();
+        if($request->has('case_related_to')) {
+            $case_group->case_id = $request->input('case_related_to');
+            $case_group->title = $request->input('title');
+            $case_group->short_title = $request->input('short_title');
+            $case_group->refno = $request->input('gr');
+            $case_group->scra = $request->input('scra');
+            $case_group->date = date('Y-m-d', strtotime($request->input('date')));
+            $case_group->status = $request->input('status');
+
+            $case_group->save();
+        } else {
+            $case->title = $request->input('title');
+            $case->short_title = $request->input('short_title');
+            $case->grno = $request->input('gr');
+            $case->scra = $request->input('scra');
+            $case->date = date('Y-m-d', strtotime($request->input('date')));
+            $case->topic = $request->input('topic');
+            $case->syllabus = $request->input('syllabus');
+            $case->body = $request->input('body');
+            $case->full_txt = $request->input('fulltxt');
+            $case->createdBy = \Auth::user()->user_id;
+            $case->status = $request->input('status');
+
+            $case->save();
+        }
         return response()->json(['message' => 'Saved Successfully.']);
     }
 
@@ -303,6 +317,11 @@ class CaseController extends Controller
         }
         
 
+        return response()->json(['cases' => $cases]);
+    }
+
+    public function listDropdownDraftCase() {
+        $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->get();
         return response()->json(['cases' => $cases]);
     }
 }

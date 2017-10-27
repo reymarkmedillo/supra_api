@@ -17,6 +17,10 @@ class CreateCaseGroupTable extends Migration
             $table->integer('case_id');
             $table->text('refno');
             $table->mediumtext('title');
+            $table->mediumtext('short_title')->nullable();
+            $table->date('date');
+            $table->text('scra');
+            $table->text('status');
             $table->timestamps();
         });
     }

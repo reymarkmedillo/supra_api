@@ -32,6 +32,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // ** DRAFT CASES **
     //LIST
     $app->get('v1/drafts/list-case', ['as' => 'listDraftCase', 'uses' => 'CaseController@listDraftCase']);
+    $app->get('v1/drafts/list-dropdown-case', ['as' => 'listDropdownDraftCase', 'uses' => 'CaseController@listDropdownDraftCase']);
     // CREATE
     $app->post('v1/drafts/create-case', ['as' => 'createDraftCase', 'uses' => 'CaseController@createDraftCase']);
     // UPDATE

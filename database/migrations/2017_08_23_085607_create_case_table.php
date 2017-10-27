@@ -15,7 +15,7 @@ class CreateCaseTable extends Migration
         Schema::create('cases', function (Blueprint $table) {
             $table->increments('id');
             $table->mediumText('title');
-            $table->mediumText('short_title');
+            $table->mediumText('short_title')->nullable();
             $table->text('scra');
             $table->string('grno');
             $table->date('date');
