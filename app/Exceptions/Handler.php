@@ -45,9 +45,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if(env('APP_DEBUG')) {
-            return parent::render($request, $e);
-        }
-        return response()->json('Bad Request',422);
+        return parent::render($request, $e);
     }
 }
