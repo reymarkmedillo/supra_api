@@ -21,5 +21,15 @@ class UserProfileSeeder extends Seeder
             'created_at' => \Carbon\Carbon::now(),
             'updated_at' => \Carbon\Carbon::now()
         ]);
+        DB::table('user_profile')->insert([
+            'user_id' => 2,
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'address' => "Massachusetts, USA",
+            'premium' => true,
+            'payment_method' => 'paypal',
+            'created_at' => \Carbon\Carbon::now(),
+            'updated_at' => \Carbon\Carbon::now()
+        ]);
     }
 }

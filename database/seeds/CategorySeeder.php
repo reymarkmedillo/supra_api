@@ -15,20 +15,20 @@ class CategorySeeder extends Seeder
         DB::table('categories')->insert([
             'level' => 1,
             'name' => 'Theft',
-            'parent_id' => '',
+            'parent_id' => 0,
             'created_at' => \Carbon\Carbon::now(),
             'updated_at' => \Carbon\Carbon::now()
         ]);
         DB::table('categories')->insert([
             'level' => 1,
-            'parent_id' => '',
+            'parent_id' => 0,
             'name' => 'Criminal Damage',
             'created_at' => \Carbon\Carbon::now(),
             'updated_at' => \Carbon\Carbon::now()
         ]);
         DB::table('categories')->insert([
             'level' => 1,
-            'parent_id' => '',
+            'parent_id' => 0,
             'name' => 'Assault',
             'created_at' => \Carbon\Carbon::now(),
             'updated_at' => \Carbon\Carbon::now()

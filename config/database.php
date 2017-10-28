@@ -1,7 +1,7 @@
 <?php
 return [
     'fetch' => PDO::FETCH_CLASS,
-    'default' => 'mysql',
+    'default' => env('DB_CONNECTION', 'mysql'),
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',
@@ -21,7 +21,8 @@ return [
             'charset'   => 'utf8',
             'collation' => 'utf8_unicode_ci',
         ],
-    ]
+    ],
+    'migrations' => 'migrations',
 ];
 
 ?>
