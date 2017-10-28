@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CaseModel;
+use App\CaseGroup;
 use App\UserHighlight;
 use App\CaseReference;
 
@@ -88,9 +89,10 @@ class CaseController extends Controller
         return response()->json($result,200);
     }
 
-    private function makeCaseArray($arr = array()) {
+    private function makeCaseArray($arr = array(), $draft = false) {
         $final = array();
         $res = array();
+        $child_grs = array();
         if(count($arr)) {
             foreach ($arr as $key => $value) {
                 $res['id'] = $value->id;
@@ -100,7 +102,18 @@ class CaseController extends Controller
                 $res['topic'] = $value->topic;
                 $res['syllabus'] = $value->syllabus;
                 $res['full_txt'] = $value->full_txt;
-                $child_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title']);
+                $res['status'] = $value->status;
+                $res['short_title'] = $value->short_title;
+                $res['date'] = $value->date;
+                $res['deleted_at'] = $value->deleted_at;
+                if(isset($value->approved)) {
+                    $res['approved'] = $value->approved;
+                }
+                if($draft == true) {
+                    $child_grs = \App\CaseGroupDraft::where('case_id', $value->id)->get(['refno','title']);
+                } else {
+                    $child_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title']);
+                }
 
                 if(count($child_grs)) {
                     $res['child_grno'] = $child_grs;
@@ -274,27 +287,43 @@ class CaseController extends Controller
 
     public function approvalDraftCase(Request $request, $case_id) {
         $case = \App\CaseDraft::find($case_id);
-        $case_tranfer = new CaseModel;
+        $case_transfer = new CaseModel;
         if(!$case) {
             return response()->json(['message' => 'Record not found.']);
         }
 
         if($request->has('approval')) {
             if($request->input('approval') == 1) {
-                $case_tranfer->title = $case->title;
-                $case_tranfer->grno = $case->grno;
-                $case_tranfer->scra = $case->scra;
-                $case_tranfer->date = $case->date;
-                $case_tranfer->topic = $case->topic;
-                $case_tranfer->syllabus = $case->syllabus;
-                $case_tranfer->body = $case->body;
-                $case_tranfer->full_txt = $case->full_txt;
-                $case_tranfer->status = $case->status;
+                $case_transfer->title = $case->title;
+                $case_transfer->grno = $case->grno;
+                $case_transfer->scra = $case->scra;
+                $case_transfer->date = $case->date;
+                $case_transfer->topic = $case->topic;
+                $case_transfer->syllabus = $case->syllabus;
+                $case_transfer->body = $case->body;
+                $case_transfer->full_txt = $case->full_txt;
+                $case_transfer->status = $case->status;
 
-                $case_tranfer->save();
-                
+                $case_transfer->save();
                 $case->approved = 1;
                 $case->save();
+
+                // FIND IF CASE HAS RELATED CASES
+                $case_related = \App\CaseGroupDraft::where('case_id', $case->id)->get();
+                if(count($case_related)) {
+                    foreach($case_related as $case_r) {
+                        $case_transfer_group = new CaseGroup;
+                        $case_transfer_group->case_id = $case_transfer->id;
+                        $case_transfer_group->refno = $case_r->refno;
+                        $case_transfer_group->title = $case_r->title;
+                        $case_transfer_group->short_title = $case_r->short_title;
+                        $case_transfer_group->date = $case_r->date;
+                        $case_transfer_group->scra = $case_r->scra;
+                        $case_transfer_group->status = $case_r->status;
+                        $case_transfer_group->save();
+                    }
+                }
+
                 return response()->json(['message' => 'Case Approved Successfully.']);
             } elseif($request->input('approval') == 0) {
                 $case->deleted_at = \Carbon\Carbon::now();
@@ -317,11 +346,11 @@ class CaseController extends Controller
         }
         
 
-        return response()->json(['cases' => $cases]);
+        return response()->json(['cases' => $this->makeCaseArray($cases,true)]);
     }
 
     public function listDropdownDraftCase() {
-        $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->get();
+        $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->where('approved', 0)->get();
         return response()->json(['cases' => $cases]);
     }
 }
