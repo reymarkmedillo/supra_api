@@ -24,6 +24,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // HIGHLIGHT
     $app->post('v1/highlight-case/{case_id}', ['as' => 'highlightCase', 'uses' => 'CaseController@highlightCase']);
     $app->get('v1/highlights/{user_id}', ['as' => 'getUserHighlights', 'uses' => 'CaseController@getUserHighlights']);
+    $app->delete('v1/highlights/{hlight_id}', ['as' => 'deleteUserHighlight', 'uses' => 'CaseController@deleteUserHighlight']);
     // BOOKMARK
     $app->post('v1/bookmark-case/{case_id}', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
@@ -55,4 +56,6 @@ $app->group(['middleware' => ['before'], 'namespace' => 'App\Http\Controllers'],
     $app->post('v1/auth/login', ['as' => 'postLogin', 'uses' => 'AuthController@postLogin']);
     // REGISTER
     $app->post('v1/auth/register', ['as' => 'postRegister', 'uses' => 'AuthController@postRegister']);
+    // FORGOT PASSWORD
+    $app->post('v1/auth/forgot', ['as' => 'postForgotPassword', 'uses' => 'AuthController@postForgotPassword']);
 });

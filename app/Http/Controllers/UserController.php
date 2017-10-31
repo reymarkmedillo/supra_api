@@ -14,7 +14,6 @@ class UserController extends Controller
     }
 
     public function updateProfile(Request $request, $user_id) {
-        \Log::info(json_encode($request->all()));
         $user = UserProfile::where('user_id', $user_id)->first();
         $auth_user = User::find($user_id);
 

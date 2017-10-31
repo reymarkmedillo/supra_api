@@ -7,6 +7,7 @@ use App\User;
 use App\AccessToken;
 use App\ApiClient;
 use App\UserProfile;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -146,6 +147,31 @@ class AuthController extends Controller
         $res['user_profile']['premium'] = $profile->premium;
         $res['user_profile']['role'] = $profile->role;
         return $res;
+    }
+
+    public function postForgotPassword(Request $request) {
+        $user = User::where('email', $request->input('email'))->first();
+        if(!$user) {
+            return response()->json(['errors' => [
+                'not_found' => 'Record not found.'
+            ]], 404);
+        }
+        $token = str_random(32);
+        \DB::table('password_resets')->insert([
+            'email' => $user->email,
+            'token' => $token,
+            'created_at'=> \Carbon\Carbon::now()
+        ]);
+        $mail_param = array(
+            'email' => $user->email,
+            'token' => $token,
+            'subj' => 'test subject'
+        );
+        Mail::send('email.forgot', $mail_param, function($message) use($mail_param) {
+            $message->to($mail_param['email']);
+            $message->subject($mail_param['subj']);
+        });
+        return response()->json(['message' => 'An email has been sent to your account.']);
     }
 
 }

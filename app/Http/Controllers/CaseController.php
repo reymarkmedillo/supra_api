@@ -149,6 +149,17 @@ class CaseController extends Controller
         return response()->json(['msg' => 'error'], 500);
     }
 
+    public function deleteUserHighlight($hlight_id) {
+        $user_highlight = UserHighlight::find($hlight_id);
+        if(!$user_highlight) {
+            return response()->json(['errors' => [
+                'not_found' => 'Record not found.'
+            ]], 404);
+        }
+        $user_highlight->delete();
+        return response()->json(['message' => 'success']);
+    }
+
     public function getUserHighlights(Request $request, $id) {
         $user_highlight = UserHighlight::where('user_id', $id)
         ->leftJoin('cases as c', 'c.id','=','user_highlights.case_id')
