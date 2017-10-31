@@ -165,7 +165,7 @@ class AuthController extends Controller
         $mail_param = array(
             'email' => $user->email,
             'token' => $token,
-            'subj' => 'test subject'
+            'subj' => 'Account Password Recovery'
         );
         Mail::send('email.forgot', $mail_param, function($message) use($mail_param) {
             $message->to($mail_param['email']);

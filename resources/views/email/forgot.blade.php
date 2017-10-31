@@ -1,2 +1,2 @@
 Please follow this link to change your password: <br><br>
-{{env('APP_URL')}}/v1/auth/forgot-password/{{$token}}
+<a href="{{env('APP_URL')}}/v1/auth/forgot-password/{{$token}}">Click to change your password.</a>
