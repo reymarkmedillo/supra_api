@@ -18,11 +18,11 @@ class CreateCaseTable extends Migration
             $table->mediumText('short_title')->nullable();
             $table->text('scra');
             $table->string('grno');
-            $table->date('date');
-            $table->mediumText('topic');
+            $table->date('date')->default(\Carbon\Carbon::now());
+            $table->mediumText('topic')->nullable();
             $table->longText('syllabus');
             $table->longText('body');
-            $table->text('full_txt');
+            $table->text('full_txt')->nullable();
             $table->text('status');
             $table->integer('createdBy');
             $table->timestamps();

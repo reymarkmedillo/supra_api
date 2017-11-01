@@ -9,6 +9,7 @@ class BeforeMiddleware
     public $client=array();
     public function handle($request, Closure $next)
     {
+        \Log::info(json_encode($request->all()));
         if( count($this->api_client($request)) == 0) {
             return response()->json(['message'  => "Unauthorized."],401);
         }

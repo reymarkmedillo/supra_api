@@ -15,12 +15,12 @@ class CreateCaseGroupTable extends Migration
         Schema::create('case_group', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('case_id');
-            $table->text('refno');
-            $table->mediumtext('title');
+            $table->text('refno')->nullable();
+            $table->mediumtext('title')->nullable();
             $table->mediumtext('short_title')->nullable();
-            $table->date('date');
-            $table->text('scra');
-            $table->text('status');
+            $table->date('date')->nullable();
+            $table->text('scra')->nullable();
+            $table->text('status')->nullable();
             $table->timestamps();
         });
     }
