@@ -174,4 +174,29 @@ class AuthController extends Controller
         return response()->json(['message' => 'An email has been sent to your account.']);
     }
 
+    public function getForgotPasswordToken($token) {
+        $find_token = \DB::table('password_resets')->where('token',$token)->first();
+        if(!$find_token) {
+            return response()->json(['errors' => [
+                'not_found' => 'Record not found.'
+            ]], 422);
+        }
+        return response()->json(['user' => $find_token]);
+    }
+
+    public function postForgotPasswordToken(Request $request, $token) {
+        $find_token = \DB::table('password_resets')->where('token',$token)->first();
+        if(!$find_token) {
+            return response()->json(['errors' => [
+                'not_found' => 'Token not found.'
+            ]], 404);
+        }
+        $user = User::where('email', $find_token->email)->first();
+        $user->password = app('hash')->make($request->input('password'));
+
+        $user->save();
+        $delete_tokens = \DB::table('password_resets')->where('email',$find_token->email)->delete();
+        return response()->json(['message' => 'success']);
+    }
+
 }

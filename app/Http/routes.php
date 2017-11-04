@@ -58,4 +58,6 @@ $app->group(['middleware' => ['before'], 'namespace' => 'App\Http\Controllers'],
     $app->post('v1/auth/register', ['as' => 'postRegister', 'uses' => 'AuthController@postRegister']);
     // FORGOT PASSWORD
     $app->post('v1/auth/forgot', ['as' => 'postForgotPassword', 'uses' => 'AuthController@postForgotPassword']);
+    $app->get('v1/auth/forgot-password/{token}', ['as' => 'getForgotPasswordToken', 'uses' => 'AuthController@getForgotPasswordToken']);
+    $app->post('v1/auth/forgot-password/{token}', ['as' => 'postForgotPasswordToken', 'uses' => 'AuthController@postForgotPasswordToken']);
 });

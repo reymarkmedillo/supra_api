@@ -37,10 +37,10 @@ class UserController extends Controller
             $user->address = $request->input('address');
         }
 
-        if($request->has('password')) {
-            $auth_user->password = app('hash')->make($request->input('password'));
-            $auth_user->save();
-        }
+        // if($request->has('password')) {
+        //     $auth_user->password = app('hash')->make($request->input('password'));
+        //     $auth_user->save();
+        // }
         if($request->has('email')) {
             $auth_user->email = $request->input('email');
             $auth_user->save();
