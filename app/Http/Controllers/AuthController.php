@@ -154,7 +154,7 @@ class AuthController extends Controller
         if(!$user) {
             return response()->json(['errors' => [
                 'not_found' => 'Record not found.'
-            ]], 404);
+            ]], 422);
         }
         $token = str_random(32);
         \DB::table('password_resets')->insert([
