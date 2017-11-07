@@ -346,14 +346,22 @@ class CaseController extends Controller
         return response()->json(['message' => 'There is some problem with your request.']);
     }
 
-    public function listDraftCase() {
+    public function listDraftCase(Request $request) {
         $cases = array();
         $user = \App\User::find(\Auth::user()->user_id);
 
         if($user->role == 'admin') {
-            $cases = \App\CaseDraft::where('approved', 0)->get();
+            if($request->has('db') && $request->input('db') == 'live') {
+                $cases = CaseModel::all();
+            } else {
+                $cases = \App\CaseDraft::where('approved', 0)->get();
+            }
         } else {
-            $cases = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 0)->get();
+            if($request->has('db') && $request->input('db') == 'live') {
+                $cases = CaseModel::where('createdBy', $user->id)->get();
+            } else {
+                $cases = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 0)->get();
+            }
         }
         
 
