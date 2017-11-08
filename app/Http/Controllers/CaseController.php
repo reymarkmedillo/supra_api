@@ -127,8 +127,8 @@ class CaseController extends Controller
     }
 
     public function viewCase($id) {
-        $case = CaseModel::where('id', $id)->get();
-        return response()->json($case);
+        $case = CaseModel::where('id', $id)->first();
+        return response()->json(['case' => $case]);
     }
 
     public function highlightCase(Request $request, $id) {
@@ -259,7 +259,12 @@ class CaseController extends Controller
     }
 
     public function updateDraftCase(Request $request, $case_id) {
-        $case = \App\CaseDraft::find($case_id);
+        if($request->has('db') && $request->input('db') == 'live') {
+            $case = \App\CaseModel::find($case_id);
+        } else {
+            $case = \App\CaseDraft::find($case_id);
+        }
+
         if(!$case) {
             return response()->json(['message' => 'Record not found.']);
         }
@@ -287,10 +292,12 @@ class CaseController extends Controller
         if($request->has('body')) {
             $case->body = $request->input('body');
         }
-        if($request->has('full_txt')) {
-            $case->body = $request->input('fulltxt');
+        if($request->has('fulltxt')) {
+            $case->full_txt = $request->input('fulltxt');
         }
-        $case->status = "reinstated";
+        if($request->has('status')) {
+            $case->status = $request->input('status');
+        }
 
         $case->save();
         return response()->json(['message' => 'Updated Successfully.']);
