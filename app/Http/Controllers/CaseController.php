@@ -307,7 +307,7 @@ class CaseController extends Controller
         $case = \App\CaseDraft::find($case_id);
         $case_transfer = new CaseModel;
         if(!$case) {
-            return response()->json(['message' => 'Record not found.']);
+            return response()->json(['message' => 'Record not found.'],422);
         }
 
         if($request->has('approval')) {
@@ -378,5 +378,16 @@ class CaseController extends Controller
     public function listDropdownDraftCase() {
         $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->where('approved', 0)->get();
         return response()->json(['cases' => $cases]);
+    }
+
+    public function deleteCase($case_id) {
+        \Log::info('here=>'.$case_id);
+        $case = CaseModel::find($case_id);
+        if(!$case) {
+            return response()->json(['message' => 'Record not found.'],422);
+        }
+
+        $case->delete();
+        return response()->json(['message' => "Successfully Deleted case id {$case_id}."]);
     }
 }
