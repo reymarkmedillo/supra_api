@@ -27,7 +27,7 @@ class CaseController extends Controller
         ]);
         if ($request->has('search')) {
             // *GR
-            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','full_txt','status','short_title','date']);
+            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
             if(count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
@@ -38,7 +38,7 @@ class CaseController extends Controller
             }
 
             // *TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','full_txt','status','short_title','date']);
+            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
             if(count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
@@ -49,7 +49,7 @@ class CaseController extends Controller
             }
 
             // *TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','full_txt','status','short_title','date']);
+            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -60,7 +60,7 @@ class CaseController extends Controller
             }
 
             // *SYLLABUS
-            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','full_txt','status','short_title','date']);
+            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
             if(count($search_syllabus)) {
                 $res_syllabus = $this->makeCaseArray($search_syllabus);
             }
@@ -77,7 +77,7 @@ class CaseController extends Controller
 
             $search_case_refs = \App\CaseGroup::where('refno', 'like', '%'.$request->input('search').'%')
             ->leftJoin('cases as a', 'a.id','=','case_group.case_id')
-            ->get(['a.id', 'a.grno','a.title', 'a.topic','a.scra','a.syllabus','a.full_txt','a.status','a.short_title','a.date']);
+            ->get(['a.id', 'a.grno','a.title', 'a.topic','a.scra','a.syllabus','a.body','a.full_txt','a.status','a.short_title','a.date']);
             if(count($search_case_refs)) {
                 $res_case_refs = $this->makeCaseArray($search_case_refs);
             }
@@ -92,7 +92,7 @@ class CaseController extends Controller
     private function makeCaseArray($arr = array(), $draft = false) {
         $final = array();
         $res = array();
-        $child_grs = array();
+        $related_grs = array();
         if(count($arr)) {
             foreach ($arr as $key => $value) {
                 $res['id'] = $value->id;
@@ -101,6 +101,7 @@ class CaseController extends Controller
                 $res['scra'] = $value->scra;
                 $res['topic'] = $value->topic;
                 $res['syllabus'] = $value->syllabus;
+                $res['body'] = $value->body;
                 $res['full_txt'] = $value->full_txt;
                 $res['status'] = $value->status;
                 $res['short_title'] = $value->short_title;
@@ -110,13 +111,13 @@ class CaseController extends Controller
                     $res['approved'] = $value->approved;
                 }
                 if($draft == true) {
-                    $child_grs = \App\CaseGroupDraft::where('case_id', $value->id)->get(['refno','title']);
+                    $related_grs = \App\CaseGroupDraft::where('case_id', $value->id)->get(['refno','title','short_title','date']);
                 } else {
-                    $child_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title']);
+                    $related_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title','short_title','date']);
                 }
 
-                if(count($child_grs)) {
-                    $res['child_grno'] = $child_grs;
+                if(count($related_grs)) {
+                    $res['related_grno'] = $related_grs;
                 }
                 array_push($final, $res);
                 $res = array();
@@ -228,9 +229,10 @@ class CaseController extends Controller
 
     public function createDraftCase(Request $request) {
         $case = new \App\CaseDraft;
-        $case_group = new \App\CaseGroupDraft;
+        $case_reference_draft = new \App\CaseReferenceDraft;
 
         if($request->has('case_related_to')) {
+            $case_group = new \App\CaseGroupDraft;
             $case_group->case_id = $request->input('case_related_to');
             $case_group->title = $request->input('title');
             $case_group->short_title = $request->input('short_title');
@@ -238,8 +240,17 @@ class CaseController extends Controller
             $case_group->scra = $request->input('scra');
             $case_group->date = date('Y-m-d', strtotime($request->input('date')));
             $case_group->status = $request->input('status');
-
+            
             $case_group->save();
+
+            if($request->has('case_parent') || $request->has('case_child') ) {
+                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_group->id;
+                $case_reference_draft->case_id = $case_group->id;
+                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_group->id;
+
+                $case_reference_draft->save();
+            }
+
         } else {
             $case->title = $request->input('title');
             $case->short_title = $request->input('short_title');
@@ -254,15 +265,26 @@ class CaseController extends Controller
             $case->status = $request->input('status');
 
             $case->save();
+
+            if($request->has('case_parent') || $request->has('case_child') ) {
+                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case->id;
+                $case_reference_draft->case_id = $case->id;
+                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$case->id;
+
+                $case_reference_draft->save();
+            }
         }
+
         return response()->json(['message' => 'Saved Successfully.']);
     }
 
     public function updateDraftCase(Request $request, $case_id) {
         if($request->has('db') && $request->input('db') == 'live') {
             $case = \App\CaseModel::find($case_id);
+            $case_reference = new \App\CaseReference;
         } else {
             $case = \App\CaseDraft::find($case_id);
+            $case_reference = new \App\CaseReferenceDraft;
         }
 
         if(!$case) {
@@ -300,6 +322,21 @@ class CaseController extends Controller
         }
 
         $case->save();
+
+        if($request->has('case_parent') || $request->has('case_child') ) {
+            $check_case_reference = $case_reference->where('case_id', $case_id)->first();
+            if($check_case_reference) {
+                $check_case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_id;
+                $check_case_reference->case_id = $case_id;
+                $check_case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_id;
+                $check_case_reference->save();
+            } else {
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_id;
+                $case_reference->case_id = $case_id;
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_id;
+                $case_reference->save();
+            }
+        }
         return response()->json(['message' => 'Updated Successfully.']);
     }
 

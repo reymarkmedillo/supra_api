@@ -19,7 +19,7 @@ class CreateCaseGroupTable extends Migration
             $table->mediumtext('title')->nullable();
             $table->mediumtext('short_title')->nullable();
             $table->date('date')->nullable();
-            $table->text('scra')->nullable();
+            $table->text('scra')->unique()->nullable();
             $table->text('status')->nullable();
             $table->timestamps();
         });

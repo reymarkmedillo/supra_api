@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCaseReferencesTable extends Migration
+class CreateRepelledCasesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateCaseReferencesTable extends Migration
      */
     public function up()
     {
-        Schema::create('case_references', function (Blueprint $table) {
+        Schema::create('repelled_cases', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('case_id');
-            $table->integer('parent_case_id')->nullable();
-            $table->integer('child_case_id')->nullable();
+            $table->date('date');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateCaseReferencesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('case_references');
+        Schema::drop('repelled_cases');
     }
 }
