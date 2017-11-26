@@ -95,30 +95,7 @@ class CaseController extends Controller
         $related_grs = array();
         if(count($arr)) {
             foreach ($arr as $key => $value) {
-                $res['id'] = $value->id;
-                $res['grno'] = $value->grno;
-                $res['title'] = $value->title;
-                $res['scra'] = $value->scra;
-                $res['topic'] = $value->topic;
-                $res['syllabus'] = $value->syllabus;
-                $res['body'] = $value->body;
-                $res['full_txt'] = $value->full_txt;
-                $res['status'] = $value->status;
-                $res['short_title'] = $value->short_title;
-                $res['date'] = $value->date;
-                $res['deleted_at'] = $value->deleted_at;
-                if(isset($value->approved)) {
-                    $res['approved'] = $value->approved;
-                }
-                if($draft == true) {
-                    $related_grs = \App\CaseGroupDraft::where('case_id', $value->id)->get(['refno','title','short_title','date']);
-                } else {
-                    $related_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title','short_title','date']);
-                }
-
-                if(count($related_grs)) {
-                    $res['related_grno'] = $related_grs;
-                }
+                $res = $this->hashCase($value,$draft);
                 array_push($final, $res);
                 $res = array();
             }
@@ -127,9 +104,56 @@ class CaseController extends Controller
         return array();
     }
 
+    public function hashCase($value,$draft = false) {
+        $res = array();
+        $related_grs = array();
+        $reference_child = array();
+        $reference_parent = array();
+
+        $res['id'] = $value->id;
+        $res['grno'] = $value->grno;
+        $res['title'] = $value->title;
+        $res['scra'] = $value->scra;
+        $res['topic'] = $value->topic;
+        $res['syllabus'] = $value->syllabus;
+        $res['body'] = $value->body;
+        $res['full_txt'] = $value->full_txt;
+        $res['status'] = $value->status;
+        $res['short_title'] = $value->short_title;
+        $res['date'] = $value->date;
+        $res['deleted_at'] = $value->deleted_at;
+
+        if(isset($value->approved)) {
+            $res['approved'] = $value->approved;
+        }
+        if($draft == true) {
+            $related_grs = \App\CaseGroupDraft::where('case_id', $value->id)->get(['refno','title','short_title','date','scra']);
+        } else {
+            $related_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title','short_title','date','scra']);
+            $reference_child = \App\CaseReference::where('case_id', $value->id)
+            ->leftJoin('cases as c','c.id', '=', 'case_references.child_case_id')
+            ->select('c.*')->get();
+            $reference_parent = \App\CaseReference::where('case_id', $value->id)
+            ->leftJoin('cases as c','c.id', '=', 'case_references.parent_case_id')
+            ->select('c.*')->get();
+        }
+
+        if(count($related_grs)) {
+            $res['related_grno'] = $related_grs;
+        }
+        if(count($reference_child)) {
+            $res['child'] = $reference_child;
+        }
+        if(count($reference_parent)) {
+            $res['parent'] = $reference_parent;
+        }
+        return $res;
+    }
+
     public function viewCase($id) {
         $case = CaseModel::where('id', $id)->first();
-        return response()->json(['case' => $case]);
+        $make_case = $this->hashCase($case);
+        return response()->json(['case' => $make_case]);
     }
 
     public function highlightCase(Request $request, $id) {
@@ -239,16 +263,23 @@ class CaseController extends Controller
             $case_group->refno = $request->input('gr');
             $case_group->scra = $request->input('scra');
             $case_group->date = date('Y-m-d', strtotime($request->input('date')));
-            $case_group->status = $request->input('status');
+            $case_group->status = 'controlling';
             
             $case_group->save();
 
             if($request->has('case_parent') || $request->has('case_child') ) {
-                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_group->id;
-                $case_reference_draft->case_id = $case_group->id;
-                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_group->id;
+                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$request->input('case_related_to');
+                $case_reference_draft->case_id = $request->input('case_related_to');
+                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$request->input('case_related_to');
 
                 $case_reference_draft->save();
+            }
+            // "update case status if there is parent/child"
+            if($request->has('case_parent')) {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'));
+            }
+            if($request->has('case_child')) {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'));
             }
 
         } else {
