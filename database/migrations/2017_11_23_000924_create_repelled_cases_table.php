@@ -12,9 +12,10 @@ class CreateRepelledCasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('repelled_cases', function (Blueprint $table) {
+        Schema::create('case_repels', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('case_id');
+            $table->integer('case_from');
+            $table->integer('case_to');
             $table->date('date');
             $table->timestamps();
         });

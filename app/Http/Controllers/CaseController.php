@@ -276,11 +276,15 @@ class CaseController extends Controller
             }
             // "update case status if there is parent/child"
             if($request->has('case_parent')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'));
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'));
             }
             if($request->has('case_child')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'));
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$request->input('case_related_to'));
             }
+            // "update the related case status to controlling"
+            $case_reference_draft = \App\CaseDraft::where('id', $request->input('case_related_to'))->first();
+            $case_reference_draft->status = 'controlling';
+            $case_reference_draft->save();
 
         } else {
             $case->title = $request->input('title');
@@ -293,7 +297,7 @@ class CaseController extends Controller
             $case->body = $request->input('body');
             $case->full_txt = $request->input('fulltxt');
             $case->createdBy = \Auth::user()->user_id;
-            $case->status = $request->input('status');
+            $case->status = 'controlling';
 
             $case->save();
 
@@ -303,6 +307,14 @@ class CaseController extends Controller
                 $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$case->id;
 
                 $case_reference_draft->save();
+            }
+
+            // "update case status if there is parent/child"
+            if($request->has('case_parent')) {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id);
+            }
+            if($request->has('case_child')) {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id);
             }
         }
 

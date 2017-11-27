@@ -12,9 +12,10 @@ class CreateReinstatedCasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('reinstated_cases', function (Blueprint $table) {
+        Schema::create('case_reinstates', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('case_id');
+            $table->integer('case_from');
+            $table->integer('case_to');
             $table->date('date');
             $table->timestamps();
         });
