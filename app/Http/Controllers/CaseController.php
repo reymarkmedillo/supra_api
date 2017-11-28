@@ -132,10 +132,10 @@ class CaseController extends Controller
             $related_grs = \App\CaseGroup::where('case_id', $value->id)->get(['refno','title','short_title','date','scra']);
             $reference_child = \App\CaseReference::where('case_id', $value->id)
             ->leftJoin('cases as c','c.id', '=', 'case_references.child_case_id')
-            ->select('c.*')->get();
+            ->select('c.*')->first();
             $reference_parent = \App\CaseReference::where('case_id', $value->id)
             ->leftJoin('cases as c','c.id', '=', 'case_references.parent_case_id')
-            ->select('c.*')->get();
+            ->select('c.*')->first();
         }
 
         if(count($related_grs)) {
@@ -315,7 +315,7 @@ class CaseController extends Controller
             }
             if($request->has('case_child')) {
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id);
-            }
+            }   
         }
 
         return response()->json(['message' => 'Saved Successfully.']);
@@ -380,6 +380,13 @@ class CaseController extends Controller
                 $case_reference->save();
             }
         }
+        // "update case status if there is parent/child"
+        if($request->has('case_parent')) {
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case_id);
+        }
+        if($request->has('case_child')) {
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case_id);
+        }
         return response()->json(['message' => 'Updated Successfully.']);
     }
 
@@ -436,23 +443,26 @@ class CaseController extends Controller
     public function listDraftCase(Request $request) {
         $cases = array();
         $user = \App\User::find(\Auth::user()->user_id);
+        $draft = true;
 
         if($user->role == 'admin') {
             if($request->has('db') && $request->input('db') == 'live') {
                 $cases = CaseModel::all();
+                $draft = false;
             } else {
                 $cases = \App\CaseDraft::where('approved', 0)->get();
             }
         } else {
             if($request->has('db') && $request->input('db') == 'live') {
                 $cases = CaseModel::where('createdBy', $user->id)->get();
+                $draft = false;
             } else {
                 $cases = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 0)->get();
             }
         }
         
 
-        return response()->json(['cases' => $this->makeCaseArray($cases,true)]);
+        return response()->json(['cases' => $this->makeCaseArray($cases,$draft)]);
     }
 
     public function listDropdownDraftCase() {
