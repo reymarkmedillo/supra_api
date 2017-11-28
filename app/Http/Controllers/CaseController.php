@@ -465,8 +465,12 @@ class CaseController extends Controller
         return response()->json(['cases' => $this->makeCaseArray($cases,$draft)]);
     }
 
-    public function listDropdownDraftCase() {
-        $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->where('approved', 0)->get();
+    public function listDropdownDraftCase(Request $request) {
+        if($request->has('db') && $request->input('db') == 'live') {
+            $cases = \App\CaseModel::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->get();
+        } else {
+            $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->where('approved', 0)->get();
+        }
         return response()->json(['cases' => $cases]);
     }
 
