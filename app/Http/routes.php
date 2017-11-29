@@ -48,6 +48,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->post('v1/user/update/{user_id}', ['as' => 'updateProfile', 'uses' => 'UserController@updateProfile']);
     $app->get('v1/user/view/{user_id}', ['as' => 'viewProfile', 'uses' => 'UserController@viewProfile']);
     $app->get('v1/users', ['as' => 'getAllUsers', 'uses' => 'UserController@getAllUsers']);
+    $app->post('v1/users/add', ['as' => 'addUser', 'uses' => 'UserController@addUser']);
 });
 
 

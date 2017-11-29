@@ -105,4 +105,42 @@ class UserController extends Controller
 
         return response()->json(['users'=> $hash_allusers]);
     }
+
+    public function addUser(Request $request) {
+        $user = new \App\User;
+        $user_profile = new \App\UserProfile;
+
+        $user->email = $request->input('email');
+        $user->password = app('hash')->make($request->input('password'));
+        $user->role = $request->input('role');
+        $user->auth_type = $request->input('auth_type');
+
+        if($request->has('function')) {
+            if($request->input('role') == 'user') {
+                $user->function = $request->input('function');
+            }
+        }
+
+        if(!$user->save()) {
+            return response()->json(['error'=> 'There is some problem with your request.'],401);
+        }
+
+        $user_profile->user_id = $user->id;
+        $user_profile->first_name = $request->input('first_name');
+        $user_profile->last_name = $request->input('last_name');
+        $user_profile->address = $request->input('address');
+
+        if($request->has('premium')) {
+            $user_profile->premium = $request->input('premium');
+        }
+        if($request->has('payment_method')) {
+            $user_profile->payment_method= $request->input('payment_method');
+        }
+        if(!$user_profile->save()) {
+            return response()->json(['error'=> 'There is some problem with your request.'],401);
+        }
+
+        return response()->json(['message'=> 'User created successfully.']);
+        
+    }
 }

@@ -382,10 +382,10 @@ class CaseController extends Controller
         }
         // "update case status if there is parent/child"
         if($request->has('case_parent')) {
-            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case_id);
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case_id,'live');
         }
         if($request->has('case_child')) {
-            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case_id);
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case_id,'live');
         }
         return response()->json(['message' => 'Updated Successfully.']);
     }
@@ -475,7 +475,6 @@ class CaseController extends Controller
     }
 
     public function deleteCase($case_id) {
-        \Log::info('here=>'.$case_id);
         $case = CaseModel::find($case_id);
         if(!$case) {
             return response()->json(['message' => 'Record not found.'],422);
