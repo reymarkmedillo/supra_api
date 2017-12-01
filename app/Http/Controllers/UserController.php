@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\UserProfile;
 use App\User;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -110,15 +111,20 @@ class UserController extends Controller
         $user = new \App\User;
         $user_profile = new \App\UserProfile;
 
+        $random_password = str_random(8);
+        $password = app('hash')->make($random_password);
+
+
         $user->email = $request->input('email');
-        $user->password = app('hash')->make($request->input('password'));
+        $user->password = $password;
         $user->role = $request->input('role');
         $user->auth_type = $request->input('auth_type');
 
-        if($request->has('function')) {
-            if($request->input('role') == 'user') {
-                $user->function = $request->input('function');
-            }
+        if($request->has('user_role_function')) {
+            $user->user_role_function = strtolower($request->input('user_role_function'));
+        }
+        if($request->has('role')) {
+            $user->role = $request->input('role');
         }
 
         if(!$user->save()) {
@@ -139,6 +145,17 @@ class UserController extends Controller
         if(!$user_profile->save()) {
             return response()->json(['error'=> 'There is some problem with your request.'],401);
         }
+
+        $mail_param = array(
+            'email' => $request->input('email'),
+            'password' => $random_password,
+            'name' => $request->input('first_name').' '.$request->input('last_name'),
+            'subj' => 'Welcome To TierApp'
+        );
+        Mail::send('email.welcome', $mail_param, function($message) use($mail_param) {
+            $message->to($mail_param['email']);
+            $message->subject($mail_param['subj']);
+        });
 
         return response()->json(['message'=> 'User created successfully.']);
         

@@ -199,4 +199,20 @@ class AuthController extends Controller
         return response()->json(['message' => 'success']);
     }
 
+    public function postChangePassword(Request $request) {
+        $user =  User::where('email', $request->input('email'))
+            ->where('password', $request->input('password'))->first();
+
+        if(!$user) {
+            return response()->json(['error'=> 'Email or Password is incorrect'],401);
+        }
+
+        $user->password = app('hash')->make($request->input('new_password'));
+        if(!$user->save()) {
+            return response()->json(['error'=> 'There is some problem with your request.'],401);
+        }
+
+        return response()->json(['message'=> 'Password change successfully.']);
+    }
+
 }
