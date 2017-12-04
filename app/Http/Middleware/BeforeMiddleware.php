@@ -10,7 +10,7 @@ class BeforeMiddleware
     public function handle($request, Closure $next)
     {
         \Log::info(json_encode($request->all()));
-        if( count($this->api_client($request)) == 0) {
+        if( !$this->api_client($request)) {
             return response()->json(['message'  => "Unauthorized."],401);
         }
         return $next($request);

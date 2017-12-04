@@ -29,7 +29,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->post('v1/bookmark-case/{case_id}', ['as' => 'bookmarkCase', 'uses' => 'CaseController@bookmarkCase']);
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
     // CATEGORY
-    $app->get('v1/categories/{parent}/{level}', ['as' => 'getCategory', 'uses' => 'CaseController@getCategory']);
+    $app->get('v1/categories/{parent}', ['as' => 'getCategory', 'uses' => 'CaseController@getCategory']);
     // DELETE
     $app->get('v1/remove/{case_id}', ['as' => 'deleteCase', 'uses' => 'CaseController@deleteCase']);
     // ** DRAFT CASES **

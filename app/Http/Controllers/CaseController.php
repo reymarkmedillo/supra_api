@@ -246,9 +246,17 @@ class CaseController extends Controller
         return $ret;
     }
 
-    public function getCategory($parent, $level) {
-        $categories = \App\Category::where('parent_id', $parent)->where('level', $level)->get();
-        return response()->json(['categories' => $categories]);
+    public function getCategory($parent) {
+        $hash_categories = array();
+        $categories = \App\Category::where('parent_id', $parent)->select(\DB::raw('id, name as label'))->get();
+        foreach($categories as $category) {
+            $temp = (object)array();
+            $temp->id = $category->id;
+            $temp->label = $category->label;
+            $temp->load_on_demand = true;
+            array_push($hash_categories, $temp);
+        }
+        return response()->json(['categories' => $hash_categories]);
     }
 
     public function createDraftCase(Request $request) {
