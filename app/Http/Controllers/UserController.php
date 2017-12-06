@@ -108,6 +108,12 @@ class UserController extends Controller
     }
 
     public function addUser(Request $request) {
+        $validator = \Validator::make($request->all(), [
+            'email' => 'required|email|unique:users',
+        ]);
+        if($validator->fails()) {
+            return response()->json(['error' => $validator->errors()]);
+        }
         $user = new \App\User;
         $user_profile = new \App\UserProfile;
 

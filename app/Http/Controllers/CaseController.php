@@ -138,21 +138,25 @@ class CaseController extends Controller
             ->select('c.*')->first();
         }
 
-        if(count($related_grs)) {
+        if($related_grs) {
             $res['related_grno'] = $related_grs;
         }
-        if(count($reference_child)) {
+        if($reference_child) {
             $res['child'] = $reference_child;
         }
-        if(count($reference_parent)) {
+        if($reference_parent) {
             $res['parent'] = $reference_parent;
         }
         return $res;
     }
 
     public function viewCase($id) {
+        $make_case = array();
         $case = CaseModel::where('id', $id)->first();
-        $make_case = $this->hashCase($case);
+        if($case) {
+            $make_case = $this->hashCase($case);
+        }
+
         return response()->json(['case' => $make_case]);
     }
 
@@ -300,7 +304,7 @@ class CaseController extends Controller
             $case->grno = $request->input('gr');
             $case->scra = $request->input('scra');
             $case->date = date('Y-m-d', strtotime($request->input('date')));
-            $case->topic = $request->input('topic');
+            $case->topic = \App\HashCase::getTopicNames($request->input('topic'));
             $case->syllabus = $request->input('syllabus');
             $case->body = $request->input('body');
             $case->full_txt = $request->input('fulltxt');
@@ -357,7 +361,7 @@ class CaseController extends Controller
             $case->date = date('Y-m-d', strtotime($request->input('date')));
         }
         if($request->has('topic')) {
-            $case->topic = $request->input('topic');
+            $case->topic = \App\HashCase::getTopicNames($request->input('topic'));
         }
         if($request->has('syllabus')) {
             $case->syllabus = $request->input('syllabus');

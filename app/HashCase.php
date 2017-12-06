@@ -55,6 +55,22 @@ class HashCase extends Model {
         $case_reference->status = 'not_controlling';
         $case_reference->save();
     }
+
+    static function getTopicNames($topics = '') {
+        $ex_topics = explode(',', $topics);
+        $new_topics_container = array();
+        $new_topics_container_joined = '';
+        if($ex_topics) {
+            foreach($ex_topics as $ex_topic) {
+                $topic = \App\Category::find($ex_topic);
+                if($topic) {
+                    array_push($new_topics_container, $topic->name);
+                }
+            }
+        }
+        $new_topics_container_joined = implode(",", $new_topics_container);
+        return $new_topics_container_joined;
+    }
 }
 
 ?>
