@@ -264,11 +264,21 @@ class CaseController extends Controller
     }
 
     public function createDraftCase(Request $request) {
-        $case = new \App\CaseDraft;
-        $case_reference_draft = new \App\CaseReferenceDraft;
-
-        if($request->has('case_related_to')) {
+        $user = \App\User::find(\Auth::user()->user_id);
+        $connection = 'drafts';
+        if($user->role == 'admin') {
+            $case = new \App\CaseModel;
+            $case_reference = new \App\CaseReference;
+            $case_group = new \App\CaseGroup;
+            $connection = 'live';
+        } else {
+            $case = new \App\CaseDraft;
+            $case_reference = new \App\CaseReferenceDraft;
             $case_group = new \App\CaseGroupDraft;
+        }
+
+
+        if($request->has('case_related_to') && $connection == 'drafts') {
             $case_group->case_id = $request->input('case_related_to');
             $case_group->title = $request->input('title');
             $case_group->short_title = $request->input('short_title');
@@ -280,23 +290,23 @@ class CaseController extends Controller
             $case_group->save();
 
             if($request->has('case_parent') || $request->has('case_child') ) {
-                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$request->input('case_related_to');
-                $case_reference_draft->case_id = $request->input('case_related_to');
-                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$request->input('case_related_to');
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$request->input('case_related_to');
+                $case_reference->case_id = $request->input('case_related_to');
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$request->input('case_related_to');
 
-                $case_reference_draft->save();
+                $case_reference->save();
             }
             // "update case status if there is parent/child"
             if($request->has('case_parent')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'));
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'),$connection);
             }
             if($request->has('case_child')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$request->input('case_related_to'));
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$request->input('case_related_to'),$connection);
             }
             // "update the related case status to controlling"
-            $case_reference_draft = \App\CaseDraft::where('id', $request->input('case_related_to'))->first();
-            $case_reference_draft->status = 'controlling';
-            $case_reference_draft->save();
+            $case_reference = \App\CaseDraft::where('id', $request->input('case_related_to'))->first();
+            $case_reference->status = 'controlling';
+            $case_reference->save();
 
         } else {
             $case->title = $request->input('title');
@@ -313,20 +323,20 @@ class CaseController extends Controller
 
             $case->save();
 
-            if($request->has('case_parent') || $request->has('case_child') ) {
-                $case_reference_draft->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case->id;
-                $case_reference_draft->case_id = $case->id;
-                $case_reference_draft->child_case_id = $request->has('case_child')?$request->input('case_child'):$case->id;
+            if(($request->has('case_parent') || $request->has('case_child')) && $connection == 'drafts') {
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case->id;
+                $case_reference->case_id = $case->id;
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case->id;
 
-                $case_reference_draft->save();
+                $case_reference->save();
             }
 
             // "update case status if there is parent/child"
-            if($request->has('case_parent')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id);
+            if($request->has('case_parent') && $connection == 'drafts') {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id,$connection);
             }
-            if($request->has('case_child')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id);
+            if($request->has('case_child') && $connection == 'drafts') {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id,$connection);
             }   
         }
 

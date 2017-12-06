@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class HashCase extends Model {
 
     static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts') {
-        $case_reference = \App\CaseDraft::where('id', $ref_id)->first();
+        if($connection == 'drafts') {
+            $case_reference = \App\CaseDraft::where('id', $ref_id)->first();
+        } else {
+            $case_reference = \App\CaseModel::where('id', $ref_id)->first();
+        }
 
         if(trim($request->input('status')) == 'reinstated') {
             // update reinstated table
@@ -52,8 +56,10 @@ class HashCase extends Model {
             }
         }
 
-        $case_reference->status = 'not_controlling';
-        $case_reference->save();
+        if($case_reference) {
+            $case_reference->status = 'not_controlling';
+            $case_reference->save();
+        }
     }
 
     static function getTopicNames($topics = '') {
