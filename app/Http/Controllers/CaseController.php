@@ -141,10 +141,10 @@ class CaseController extends Controller
         if($related_grs) {
             $res['related_grno'] = $related_grs;
         }
-        if($reference_child->id) {
+        if(isset($reference_child->id)) {
             $res['child'] = $reference_child;
         }
-        if($reference_parent->id) {
+        if(isset($reference_parent->id)) {
             $res['parent'] = $reference_parent;
         }
         return $res;
