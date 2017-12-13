@@ -6,19 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class HashCase extends Model {
 
-    static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts') {
-        if($connection == 'drafts') {
-            $case_reference = \App\CaseDraft::where('id', $ref_id)->first();
-        } else {
-            $case_reference = \App\CaseModel::where('id', $ref_id)->first();
-        }
+    static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts', $status='not_controlling') {
+        $case_reference = \App\CaseModel::where('id', $ref_id)->first();
 
         if(trim($request->input('status')) == 'reinstated') {
             // update reinstated table
             $reinstated = new \App\CaseReinstate;
-            if($connection == 'drafts') {
-                $reinstated->setConnection($connection);
-            }
             
             $search = $reinstated->where('case_to', $case_id)->where('case_from', $ref_id)->first();
 
@@ -37,9 +30,6 @@ class HashCase extends Model {
         } elseif(trim($request->input('status')) == 'repealed') {
             // update repealed table
             $repelled = new \App\CaseRepel;
-            if($connection == 'drafts') {
-                $repelled->setConnection($connection);
-            }
 
             $search = $repelled->where('case_to', $case_id)->where('case_from', $ref_id)->first();
 
@@ -57,7 +47,7 @@ class HashCase extends Model {
         }
 
         if($case_reference) {
-            $case_reference->status = 'not_controlling';
+            $case_reference->status = $status;
             $case_reference->save();
         }
     }

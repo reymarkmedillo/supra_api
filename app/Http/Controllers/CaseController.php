@@ -141,10 +141,10 @@ class CaseController extends Controller
         if($related_grs) {
             $res['related_grno'] = $related_grs;
         }
-        if($reference_child) {
+        if($reference_child->id) {
             $res['child'] = $reference_child;
         }
-        if($reference_parent) {
+        if($reference_parent->id) {
             $res['parent'] = $reference_parent;
         }
         return $res;
@@ -252,12 +252,16 @@ class CaseController extends Controller
 
     public function getCategory($parent) {
         $hash_categories = array();
-        $categories = \App\Category::where('parent_id', $parent)->select(\DB::raw('id, name as label'))->get();
+        $temp = (object)array();
+        $temp->id = "";
+        $temp->text = "Select Category ...";
+        array_push($hash_categories, $temp);
+
+        $categories = \App\Category::where('parent_id', $parent)->select('id',\DB::raw("name as text"))->get();
         foreach($categories as $category) {
             $temp = (object)array();
             $temp->id = $category->id;
-            $temp->label = $category->label;
-            $temp->load_on_demand = true;
+            $temp->text = $category->text;
             array_push($hash_categories, $temp);
         }
         return response()->json(['categories' => $hash_categories]);
@@ -265,15 +269,14 @@ class CaseController extends Controller
 
     public function createDraftCase(Request $request) {
         $user = \App\User::find(\Auth::user()->user_id);
+        $case_reference = new \App\CaseReference;
         $connection = 'drafts';
         if($user->role == 'admin') {
             $case = new \App\CaseModel;
-            $case_reference = new \App\CaseReference;
             $case_group = new \App\CaseGroup;
             $connection = 'live';
         } else {
             $case = new \App\CaseDraft;
-            $case_reference = new \App\CaseReferenceDraft;
             $case_group = new \App\CaseGroupDraft;
         }
 
@@ -290,15 +293,15 @@ class CaseController extends Controller
             $case_group->save();
 
             if($request->has('case_parent') || $request->has('case_child') ) {
-                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$request->input('case_related_to');
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):0;
                 $case_reference->case_id = $request->input('case_related_to');
-                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$request->input('case_related_to');
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):0;
 
                 $case_reference->save();
             }
             // "update case status if there is parent/child"
             if($request->has('case_parent')) {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'),$connection);
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'),$connection,'controlling');
             }
             if($request->has('case_child')) {
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$request->input('case_related_to'),$connection);
@@ -324,16 +327,16 @@ class CaseController extends Controller
             $case->save();
 
             if(($request->has('case_parent') || $request->has('case_child')) && $connection == 'drafts') {
-                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case->id;
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):0;
                 $case_reference->case_id = $case->id;
-                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case->id;
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):0;
 
                 $case_reference->save();
             }
 
             // "update case status if there is parent/child"
             if($request->has('case_parent') && $connection == 'drafts') {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id,$connection);
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id,$connection,'controlling');
             }
             if($request->has('case_child') && $connection == 'drafts') {
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id,$connection);
@@ -391,14 +394,14 @@ class CaseController extends Controller
         if($request->has('case_parent') || $request->has('case_child') ) {
             $check_case_reference = $case_reference->where('case_id', $case_id)->first();
             if($check_case_reference) {
-                $check_case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_id;
+                $check_case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):0;
                 $check_case_reference->case_id = $case_id;
-                $check_case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_id;
+                $check_case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):0;
                 $check_case_reference->save();
             } else {
-                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):$case_id;
+                $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):0;
                 $case_reference->case_id = $case_id;
-                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):$case_id;
+                $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):0;
                 $case_reference->save();
             }
         }
@@ -488,11 +491,7 @@ class CaseController extends Controller
     }
 
     public function listDropdownDraftCase(Request $request) {
-        if($request->has('db') && $request->input('db') == 'live') {
-            $cases = \App\CaseModel::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->get();
-        } else {
-            $cases = \App\CaseDraft::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->where('approved', 0)->get();
-        }
+        $cases = \App\CaseModel::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))->get();
         return response()->json(['cases' => $cases]);
     }
 
