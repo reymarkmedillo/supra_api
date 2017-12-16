@@ -61,6 +61,8 @@ class HashCase extends Model {
                 $topic = \App\Category::find($ex_topic);
                 if($topic) {
                     array_push($new_topics_container, $topic->name);
+                } else {
+                    array_push($new_topics_container, $ex_topic);
                 }
             }
         }
