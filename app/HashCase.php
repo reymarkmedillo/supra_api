@@ -69,6 +69,23 @@ class HashCase extends Model {
         $new_topics_container_joined = implode(",", $new_topics_container);
         return $new_topics_container_joined;
     }
+
+    static function makeDropdown($values = array(), $text = "Please choose") {
+        $hash_values = array();
+        $temp = (object)array();
+        $temp->id = null;
+        $temp->text = $text;
+        array_push($hash_values, $temp);
+
+        foreach($values as $val) {
+            $temp = (object)array();
+            $temp->id = $val->id;
+            $temp->text = $val->text;
+            array_push($hash_values, $temp);
+        }
+
+        return $hash_values;
+    }
 }
 
 ?>
