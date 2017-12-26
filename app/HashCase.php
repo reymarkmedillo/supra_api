@@ -86,6 +86,28 @@ class HashCase extends Model {
 
         return $hash_values;
     }
+
+    static function validateDate($request) {
+        if($request->has('date')) {
+            if($request->has('case_parent')) {
+                $case_parent = \App\CaseModel::find($request->input('case_parent'));
+                if( $case_parent && (\Carbon\Carbon::parse($request->input('date')) <  \Carbon\Carbon::parse($case_parent->date)) ) {
+                    return 'Date field must not be less than referenced Parent field.';
+                } else {
+                    return null;
+                }
+            }
+
+            if($request->has('case_child')) {
+                $case_child = \App\CaseModel::find($request->input('case_child'));
+                if( $case_child && (\Carbon\Carbon::parse($request->input('date')) <  \Carbon\Carbon::parse($case_child->date)) ) {
+                    return 'Date field must not be less than referenced Child field.';
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
 }
 
 ?>

@@ -268,6 +268,20 @@ class CaseController extends Controller
             $case_group = new \App\CaseGroupDraft;
         }
 
+        // "DATE AND PARENT/CHILD CASE_DATES VALIDATION"
+        if($request->has('case_parent')) {
+            $validate_dates = \App\HashCase::validateDate($request);
+            if($validate_dates) {
+                return response()->json(['message' => $validate_dates], 422);
+            }
+        }
+        if($request->has('case_child')) {
+            $validate_dates = \App\HashCase::validateDate($request);
+            if($validate_dates) {
+                return response()->json(['message' => $validate_dates], 422);
+            }
+        }
+
 
         if($request->has('case_related_to') && $connection == 'drafts') {
             $case_group->case_id = $request->input('case_related_to');
@@ -289,6 +303,7 @@ class CaseController extends Controller
             }
             // "update case status if there is parent/child"
             if($request->has('case_parent')) {
+                $validate_dates = \App\HashCase::validateDate($request);
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'),$connection,'controlling');
             }
             if($request->has('case_child')) {
