@@ -120,7 +120,8 @@ class AuthController extends Controller
             'a.email',
             'a.role',
             'user_profile.payment_method',
-            'user_profile.premium'
+            'user_profile.premium',
+            'a.user_role_function'
         ]);
 
         AccessToken::create([
@@ -146,6 +147,7 @@ class AuthController extends Controller
         $res['user_profile']['payment_method'] = $profile->payment_method;
         $res['user_profile']['premium'] = $profile->premium;
         $res['user_profile']['role'] = $profile->role;
+        $res['user_profile']['user_role_function'] = $profile->user_role_function;
         return $res;
     }
 
