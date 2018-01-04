@@ -34,6 +34,17 @@ class AuthController extends Controller
         if(!in_array($request->input('type'), config('define.auth_types') )) {
             return response()->json(['msg'=>array('There is a problem with your request.')],422);
         } else {
+
+            // clear expired tokens
+            AccessToken::where('expires_at','<', \Carbon\Carbon::now())->delete();
+
+            // "TWO LOGIN LIMIT ALLOWED"
+            $user_active_login_count = AccessToken::where('user_id', $user->id)->count();
+
+            if($user_active_login_count == 2) {
+                return response()->json(['msg'=> array('Your login limit has been reached.')],422);
+            }
+
             if($request->input('type') == 'normal') { // NORMAL LOGIN
                 $this->validate($request, [
                     'password' => 'required'
@@ -45,8 +56,6 @@ class AuthController extends Controller
                 }
 
                 $tokens = $this->saveTokens($user, $request);
-                // clear expired tokens
-                AccessToken::where('expires_at','<', \Carbon\Carbon::now())->delete();
                 return response()->json($tokens);
 
             } else { // THIRD-PARTY LOGIN 
