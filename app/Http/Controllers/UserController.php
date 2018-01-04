@@ -164,6 +164,17 @@ class UserController extends Controller
         });
 
         return response()->json(['message'=> 'User created successfully.']);
+    }
+
+    public function removeUser($user_id, Request $request) {
+        $action_user = \App\User::find(\Auth::user()->user_id);
+
+        if($action_user->role == 'admin' && is_null($action_user->user_role_function)) {
+            $user = \App\User::find($user_id);
+            $user->delete();
+            return response()->json(['message' => 'Successfully Deleted...']);
+        }
+        return response()->json(['message' => 'Unauthorized'], 401);
         
     }
 }

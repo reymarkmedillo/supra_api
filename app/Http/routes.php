@@ -49,6 +49,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->get('v1/user/view/{user_id}', ['as' => 'viewProfile', 'uses' => 'UserController@viewProfile']);
     $app->get('v1/users', ['as' => 'getAllUsers', 'uses' => 'UserController@getAllUsers']);
     $app->post('v1/users/add', ['as' => 'addUser', 'uses' => 'UserController@addUser']);
+    $app->post('v1/users/remove/{user_id}', ['as' => 'removeUser', 'uses' => 'UserController@removeUser']);
     $app->post('v1/auth/change-password', ['as' => 'postChangePassword', 'uses' => 'AuthController@postChangePassword']);
 });
 
