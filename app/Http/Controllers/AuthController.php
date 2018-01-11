@@ -211,7 +211,6 @@ class AuthController extends Controller
     }
 
     public function postChangePassword(Request $request) {
-        \Log::info(json_encode($request->all()));
         $user =  User::where('email', $request->input('email'))->first();
 
         if(!$user) {
@@ -229,6 +228,21 @@ class AuthController extends Controller
         }
 
         return response()->json(['message'=> 'Password change successfully.']);
+    }
+
+    public function getLogout(Request $request) {
+        // clear expired tokens
+        AccessToken::where('expires_at','<', \Carbon\Carbon::now())->delete();
+
+        $header = $request->headers->get('Authorization');
+        $access_token = str_replace('Bearer ','',$header);
+
+        $db_token = AccessToken::where('api_token', $access_token)->delete();
+
+        if($db_token) {
+            return response()->json(['message'=> 'Logout Successful']);
+        }
+        return response()->json(['message'=> 'There is some problem with your request.']);
     }
 
 }

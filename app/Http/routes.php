@@ -51,6 +51,7 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->post('v1/users/add', ['as' => 'addUser', 'uses' => 'UserController@addUser']);
     $app->post('v1/users/remove/{user_id}', ['as' => 'removeUser', 'uses' => 'UserController@removeUser']);
     $app->post('v1/auth/change-password', ['as' => 'postChangePassword', 'uses' => 'AuthController@postChangePassword']);
+    $app->get('v1/auth/logout', ['as' => 'getLogout', 'uses' => 'AuthController@getLogout']);
 });
 
 
