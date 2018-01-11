@@ -41,7 +41,7 @@ class AuthController extends Controller
             // "TWO LOGIN LIMIT ALLOWED"
             $user_active_login_count = AccessToken::where('user_id', $user->id)->count();
 
-            if($user_active_login_count == 2) {
+            if(($user->role != 'admin' || !empty($user->user_role_function)) && $user_active_login_count == 2) {
                 return response()->json(['msg'=> array('Your login limit has been reached.')],422);
             }
 
