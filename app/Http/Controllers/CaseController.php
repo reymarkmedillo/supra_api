@@ -96,6 +96,7 @@ class CaseController extends Controller
         if(count($arr)) {
             foreach ($arr as $key => $value) {
                 $res = $this->hashCase($value,$draft);
+                $res = $this->getChildParentCase($res, $draft);
                 array_push($final, $res);
                 $res = array();
             }
@@ -103,12 +104,10 @@ class CaseController extends Controller
         }
         return array();
     }
+    
 
     public function hashCase($value,$draft = false) {
         $res = array();
-        $related_grs = array();
-        $reference_child = array();
-        $reference_parent = array();
 
         $res['id'] = $value->id;
         $res['grno'] = $value->grno;
@@ -120,8 +119,18 @@ class CaseController extends Controller
         $res['full_txt'] = $value->full_txt;
         $res['status'] = $value->status;
         $res['short_title'] = $value->short_title;
-        $res['date'] = $value->date;
+        $res['date'] = date('F d, Y' ,strtotime($value->date));
         $res['deleted_at'] = $value->deleted_at;
+
+        return $res;
+    }
+
+    public function getChildParentCase($value,$draft = false) {
+        $res = $value;
+        $related_grs = array();
+        $reference_child = array();
+        $reference_parent = array();
+        $value = (object) $value;
 
         if(isset($value->approved)) {
             $res['approved'] = $value->approved;
@@ -142,11 +151,12 @@ class CaseController extends Controller
             $res['related_grno'] = $related_grs;
         }
         if(isset($reference_child->id)) {
-            $res['child'] = $reference_child;
+            $res['child'] = $this->hashCase($reference_child, $draft);
         }
         if(isset($reference_parent->id)) {
-            $res['parent'] = $reference_parent;
+            $res['parent'] = $this->hashCase($reference_parent, $draft);
         }
+
         return $res;
     }
 
@@ -194,6 +204,7 @@ class CaseController extends Controller
         ->leftJoin('cases as c', 'c.id','=','user_highlights.case_id')
         ->whereNotNull('text')
         ->where('text', '!=', '')
+        ->orderBy('created_at', 'desc')
         ->get([
             'user_highlights.id',
             'user_id',
@@ -280,6 +291,14 @@ class CaseController extends Controller
             if($validate_dates) {
                 return response()->json(['message' => $validate_dates], 422);
             }
+        }
+        // "EXTRA VALIDATIONS"
+        $request->merge(array('grno' => $request->input('gr')));
+        $validator = \Validator::make($request->all(), [
+            'grno' => 'unique:cases'
+        ]);
+        if($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
 
