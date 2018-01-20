@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class HashCase extends Model {
 
-    static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts', $status='not_controlling') {
+    static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts') {
         $case_reference = \App\CaseModel::where('id', $ref_id)->first();
 
         if(trim($request->input('status')) == 'reinstated') {
@@ -47,7 +47,14 @@ class HashCase extends Model {
         }
 
         if($case_reference) {
-            $case_reference->status = $status;
+            if($request->has('case_parent') && $request->has('case_child')) {
+                $case_reference->status = 'not_controlling';
+            } else if($request->has('case_parent') && !$request->has('case_child')) {
+                $case_reference->status = 'not_controlling';
+            } else {
+                $case_reference->status = 'controlling';
+            }
+            // $case_reference->status = $status;
             $case_reference->save();
         }
     }
