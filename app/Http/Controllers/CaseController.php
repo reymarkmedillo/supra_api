@@ -120,6 +120,9 @@ class CaseController extends Controller
         $res['status'] = $value->status;
         $res['short_title'] = $value->short_title;
         $res['date'] = date('F d, Y' ,strtotime($value->date));
+        if(isset($value->approved)) {
+            $res['approved'] = $value->approved;
+        }
         $res['deleted_at'] = $value->deleted_at;
 
         return $res;
