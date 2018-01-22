@@ -120,6 +120,9 @@ class CaseController extends Controller
         $res['status'] = $value->status;
         $res['short_title'] = $value->short_title;
         $res['date'] = date('F d, Y' ,strtotime($value->date));
+        if(isset($value->approved)) {
+            $res['approved'] = $value->approved;
+        }
         $res['deleted_at'] = $value->deleted_at;
 
         return $res;
@@ -309,7 +312,13 @@ class CaseController extends Controller
             $case_group->refno = $request->input('gr');
             $case_group->scra = $request->input('scra');
             $case_group->date = date('Y-m-d', strtotime($request->input('date')));
-            $case_group->status = 'controlling';
+            if($request->has('case_parent') && $request->has('case_child')) {
+                $case_group->status = 'controlling';
+            } else if($request->has('case_parent') && !$request->has('case_child')) {
+                $case_group->status = 'controlling';
+            } else {
+                $case_group->status = 'not_controlling';
+            }
             
             $case_group->save();
 
@@ -322,7 +331,6 @@ class CaseController extends Controller
             }
             // "update case status if there is parent/child"
             if($request->has('case_parent')) {
-                $validate_dates = \App\HashCase::validateDate($request);
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$request->input('case_related_to'),$connection,'controlling');
             }
             if($request->has('case_child')) {
@@ -344,11 +352,17 @@ class CaseController extends Controller
             $case->body = $request->input('body');
             $case->full_txt = $request->input('fulltxt');
             $case->createdBy = \Auth::user()->user_id;
-            $case->status = 'controlling';
+            if($request->has('case_parent') && $request->has('case_child')) {
+                $case->status = 'controlling';
+            } else if($request->has('case_parent') && !$request->has('case_child')) {
+                $case->status = 'controlling';
+            } else {
+                $case->status = 'not_controlling';
+            }
 
             $case->save();
 
-            if(($request->has('case_parent') || $request->has('case_child')) && $connection == 'drafts') {
+            if(($request->has('case_parent') || $request->has('case_child'))) {
                 $case_reference->parent_case_id = $request->has('case_parent')?$request->input('case_parent'):0;
                 $case_reference->case_id = $case->id;
                 $case_reference->child_case_id = $request->has('case_child')?$request->input('case_child'):0;
@@ -357,10 +371,10 @@ class CaseController extends Controller
             }
 
             // "update case status if there is parent/child"
-            if($request->has('case_parent') && $connection == 'drafts') {
-                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id,$connection,'controlling');
+            if($request->has('case_parent')) {
+                \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case->id,$connection);
             }
-            if($request->has('case_child') && $connection == 'drafts') {
+            if($request->has('case_child')) {
                 \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case->id,$connection);
             }   
         }

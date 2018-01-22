@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->input('email'))->first();
         if(!$user) {
-            return response()->json(['msg'=> array('Record not found.')],422);
+            return response()->json(['msg'=> array('Email/Password is incorrect.')],422);
         } else {
             if($user->auth_type != 'multiple') {
                 if($user->auth_type != $request->input('type')) {
@@ -54,7 +54,7 @@ class AuthController extends Controller
 
                 $check_password = app('hash')->check($request->input('password'), $user->password);
                 if(!$check_password) {
-                    return response()->json(['msg'=> array('Wrong Password.')],422);
+                    return response()->json(['msg'=> array('Email/Password is incorrect.')],422);
                 }
 
                 $tokens = $this->saveTokens($user, $request);
