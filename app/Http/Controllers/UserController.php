@@ -28,20 +28,25 @@ class UserController extends Controller
         if($request->has('last_name')) {
             $user->last_name = $request->input('last_name');
         }
-        if($request->has('premium')) {
-            $user->premium = $request->input('premium');
-        }
-        if($request->has('payment_method')) {
-            $user->payment_method = $request->input('payment_method');
-        }
         if($request->has('address')) {
             $user->address = $request->input('address');
         }
 
-        // if($request->has('password')) {
-        //     $auth_user->password = app('hash')->make($request->input('password'));
-        //     $auth_user->save();
-        // }
+        // "UPDATE OTHER FIELDS IS REQUESTOR IS ADMIN"
+        if(\Auth::user()->role == 'admin' && empty(\Auth::user()->user_role_function)) {
+            if($request->has('role')) {
+                $user->role = $request->input('role');
+            }
+            if($request->has('auth_type')) {
+                $user->auth_type = $request->input('auth_type');
+            }
+            if($request->has('premium')) {
+                $user->premium = $request->input('premium');
+            }
+            if($request->has('payment_method')) {
+                $user->payment_method = $request->input('payment_method');
+            }
+        }
         if($request->has('email')) {
             $auth_user->email = $request->input('email');
             $auth_user->save();
