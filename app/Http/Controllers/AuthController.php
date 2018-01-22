@@ -26,8 +26,10 @@ class AuthController extends Controller
         if(!$user) {
             return response()->json(['msg'=> array('Record not found.')],422);
         } else {
-            if($user->auth_type != $request->input('type')) {
-                return response()->json(['msg'=> array('Invalid login.')],422);
+            if($user->auth_type != 'multiple') {
+                if($user->auth_type != $request->input('type')) {
+                    return response()->json(['msg'=> array('Invalid login.')],422);
+                }
             }
         }
 
@@ -45,7 +47,7 @@ class AuthController extends Controller
                 return response()->json(['msg'=> array('Your login limit has been reached.')],422);
             }
 
-            if($request->input('type') == 'normal') { // NORMAL LOGIN
+            if($request->input('type') == 'normal') { // NORMAL LOGIN (for web request pls use 'normal')
                 $this->validate($request, [
                     'password' => 'required'
                 ]);
@@ -58,7 +60,7 @@ class AuthController extends Controller
                 $tokens = $this->saveTokens($user, $request);
                 return response()->json($tokens);
 
-            } else { // THIRD-PARTY LOGIN 
+            } else { // THIRD-PARTY LOGIN  (for mobile requests please use other auth types aside from 'normal')
                 $this->validate($request, [
                     'token' => 'required'
                 ]);
