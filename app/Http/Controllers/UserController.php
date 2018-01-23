@@ -17,8 +17,15 @@ class UserController extends Controller
     public function updateProfile(Request $request, $user_id) {
         $user = UserProfile::where('user_id', $user_id)->first();
         $auth_user = User::find($user_id);
+        $token_user = User::find(\Auth::user()->user_id);
 
         if(!$user || !$auth_user) {
+            return response()->json(['msg' => 'error']);
+        }
+        // "DISALLOW UPDATING OF USER IF NOT SUPER ADMIN"
+        if( ($token_user->role != 'admin') && $token_user->id != $user_id ) {
+            return response()->json(['msg' => 'error']);
+        } elseif($token_user->role == 'admin' && !empty($token_user->user_role_function)) {
             return response()->json(['msg' => 'error']);
         }
 
@@ -33,12 +40,19 @@ class UserController extends Controller
         }
 
         // "UPDATE OTHER FIELDS IS REQUESTOR IS ADMIN"
-        if(\Auth::user()->role == 'admin' && empty(\Auth::user()->user_role_function)) {
+        if($token_user->role == 'admin' && empty($token_user->user_role_function)) {
             if($request->has('role')) {
-                $user->role = $request->input('role');
+                $auth_user->role = $request->input('role');
             }
+            if($request->has('user_role_function')) {
+                $auth_user->user_role_function = $request->input('user_role_function');
+            } else {
+                $auth_user->user_role_function = NULL;
+            }
+            
+
             if($request->has('auth_type')) {
-                $user->auth_type = $request->input('auth_type');
+                $auth_user->auth_type = $request->input('auth_type');
             }
             if($request->has('premium')) {
                 $user->premium = $request->input('premium');
@@ -53,6 +67,8 @@ class UserController extends Controller
         }
 
         $user->save();
+        $user = UserProfile::where('user_id', $user_id)->first();
+        $auth_user = User::find($user_id);
 
         $profile = array();
         $profile['id'] = $user->id;
@@ -61,9 +77,11 @@ class UserController extends Controller
         $profile['last_name'] = $user->last_name;
         $profile['address'] = $user->address;
         $profile['email'] = $auth_user->email;
+        $profile['auth_type'] = $auth_user->auth_type;
         $profile['payment_method'] = $user->payment_method;
         $profile['premium'] = $user->premium;
         $profile['role'] = $auth_user->role;
+        $profile['user_role_function'] = $auth_user->user_role_function;
         return response()->json(['msg'=>'success', 'user_profile' => $profile]);
     }
 
@@ -95,7 +113,12 @@ class UserController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $all_users = \App\User::all();
+        if($user->role == 'admin' && empty($user->user_role_function)) {
+            $all_users = \App\User::all();
+        } else {
+            $all_users = \App\User::whereNotIn('auth_type', ['multiple', 'normal'])->get();
+        }
+
         foreach ($all_users as $user) {
             $approve = \App\CaseDraft::where('createdBy', $user->id)->where('approved', 1)->count();
             $pending = \App\CaseDraft::where('createdBy', $user->id)->whereNull('deleted_at')->where('approved', 0)->count();

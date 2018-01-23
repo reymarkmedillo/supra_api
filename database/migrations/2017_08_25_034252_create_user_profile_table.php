@@ -20,6 +20,7 @@ class CreateUserProfileTable extends Migration
             $table->text('address');
             $table->boolean('premium')->default(false);
             $table->string('payment_method');
+            $table->date('subscription_enddate')->default(null);
             $table->timestamps();
         });
     }
