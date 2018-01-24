@@ -39,7 +39,7 @@ class UserController extends Controller
             $user->address = $request->input('address');
         }
 
-        // "UPDATE OTHER FIELDS IS REQUESTOR IS ADMIN"
+        // "UPDATE OTHER FIELDS IF REQUESTOR IS ADMIN"
         if($token_user->role == 'admin' && empty($token_user->user_role_function)) {
             if($request->has('role')) {
                 $auth_user->role = $request->input('role');
@@ -49,7 +49,12 @@ class UserController extends Controller
             } else {
                 $auth_user->user_role_function = NULL;
             }
-            
+
+            if($request->has('subscription_period')) {
+                $dt = \Carbon\Carbon::parse(date("Y-m-d H:i:s"))->setTimezone('Asia/Manila');
+                $user->subscription_startdate = date("Y-m-d H:i:s");
+                $user->subscription_enddate = $dt->addDays($request->input('subscription_period'));
+            }
 
             if($request->has('auth_type')) {
                 $auth_user->auth_type = $request->input('auth_type');
@@ -70,6 +75,9 @@ class UserController extends Controller
         $user = UserProfile::where('user_id', $user_id)->first();
         $auth_user = User::find($user_id);
 
+        $user_subscription_startdate = \Carbon\Carbon::parse($user->subscription_startdate)->setTimezone('Asia/Manila');
+        $user_subscription_enddate = \Carbon\Carbon::parse($user->subscription_enddate)->setTimezone('Asia/Manila');
+
         $profile = array();
         $profile['id'] = $user->id;
         $profile['user_id'] = $user->user_id;
@@ -82,6 +90,7 @@ class UserController extends Controller
         $profile['premium'] = $user->premium;
         $profile['role'] = $auth_user->role;
         $profile['user_role_function'] = $auth_user->user_role_function;
+        $profile['user_subscription'] = (isset($user_subscription_startdate) && isset($user_subscription_enddate))?$user_subscription_startdate->diffInDays($user_subscription_enddate):null;
         return response()->json(['msg'=>'success', 'user_profile' => $profile]);
     }
 

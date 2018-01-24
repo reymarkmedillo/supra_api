@@ -25,13 +25,14 @@ class AuthController extends Controller
         $user = User::where('email', $request->input('email'))->first();
         if(!$user) {
             return response()->json(['msg'=> array('Email/Password is incorrect.')],422);
-        } else {
-            if($user->auth_type != 'multiple') {
-                if($user->auth_type != $request->input('type')) {
-                    return response()->json(['msg'=> array('Invalid login.')],422);
-                }
-            }
-        }
+        } 
+        // else { // to pave way for mobile users to login to web
+        //     if($user->auth_type != 'multiple') {
+        //         if($user->auth_type != $request->input('type')) {
+        //             return response()->json(['msg'=> array('Invalid login.')],422);
+        //         }
+        //     }
+        // }
 
         if(!in_array($request->input('type'), config('define.auth_types') )) {
             return response()->json(['msg'=>array('There is a problem with your request.')],422);
@@ -132,7 +133,10 @@ class AuthController extends Controller
             'a.role',
             'user_profile.payment_method',
             'user_profile.premium',
-            'a.user_role_function'
+            'user_profile.subscription_enddate',
+            'user_profile.subscription_startdate',
+            'a.user_role_function',
+            'a.auth_type'
         ]);
 
         AccessToken::create([
@@ -157,8 +161,11 @@ class AuthController extends Controller
         $res['user_profile']['email'] = $profile->email;
         $res['user_profile']['payment_method'] = $profile->payment_method;
         $res['user_profile']['premium'] = $profile->premium;
+        $res['user_profile']['subscription_startdate'] = $profile->subscription_startdate;
+        $res['user_profile']['subscription_enddate'] = $profile->subscription_enddate;
         $res['user_profile']['role'] = $profile->role;
         $res['user_profile']['user_role_function'] = $profile->user_role_function;
+        $res['user_profile']['auth_type'] = $profile->auth_type;
         return $res;
     }
 
