@@ -217,7 +217,8 @@ class CaseController extends Controller
             'user_highlights.updated_at',
             'c.grno',
             'c.short_title',
-            'c.title'
+            'c.title',
+            'c.date'
         ]);
         if($user_highlight) {
             return response()->json(['highlights' => $user_highlight]);
