@@ -39,29 +39,29 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized. [1]'], 401);
         } else {
             if ($this->auth->check()) {
                 // this area is not yet used
                 $access_token = $this->auth->guard($guard)->user();
                 if($request->route()[1]['uses'] != 'auth.refresh' && strtotime($access_token->expires_at) < time()) {
-                    return response()->json(['message' => 'Unauthorized'], 401);
+                    return response()->json(['message' => 'Unauthorized. [2]'], 401);
                 }
 
                 $before_midware = new BeforeMiddleware();
                 if ($before_midware->api_client($request)->id != $access_token->api_client_id) {
-                    return response()->json(['message' => 'Unauthorized.'], 401);
+                    return response()->json(['message' => 'Unauthorized. [3]'], 401);
                 }
 
                 // this area is not yet used
                 $user = User::find($access_token->user_id); 
                 if ($guard == 'admin' && $user->role != 'admin') {
-                    return response()->json(['message' => 'Unauthorized.'], 401);
+                    return response()->json(['message' => 'Unauthorized. [4]'], 401);
                 }
                 return $next($request);
             }
         }
 
-        return response()->json(['message'  => "Unauthorized."],401);
+        return response()->json(['message'  => "Unauthorized. [5]"],401);
     }
 }
