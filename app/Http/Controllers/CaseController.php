@@ -168,6 +168,7 @@ class CaseController extends Controller
         $case = CaseModel::where('id', $id)->first();
         if($case) {
             $make_case = $this->hashCase($case);
+            $make_case = $this->getChildParentCase($make_case);
         }
 
         return response()->json(['case' => $make_case]);
