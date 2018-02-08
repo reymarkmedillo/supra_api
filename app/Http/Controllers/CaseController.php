@@ -423,9 +423,6 @@ class CaseController extends Controller
         if($request->has('fulltxt')) {
             $case->full_txt = $request->input('fulltxt');
         }
-        if($request->has('status')) {
-            $case->status = $request->input('status');
-        }
 
         $case->save();
 
@@ -445,10 +442,16 @@ class CaseController extends Controller
         }
         // "update case status if there is parent/child"
         if($request->has('case_parent')) {
-            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case_id,'live');
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_parent'),$case_id);
         }
         if($request->has('case_child')) {
-            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case_id,'live');
+            \App\HashCase::updateCaseStatusAndReference($request, $request->input('case_child'),$case_id);
+        }
+        if(!$request->has('case_child') && !$request->has('case_parent')) {
+            if($request->has('status')) {
+                $case->status = $request->input('status');
+                $case->save();
+            }
         }
         return response()->json(['message' => 'Updated Successfully.']);
     }

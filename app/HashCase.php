@@ -8,6 +8,7 @@ class HashCase extends Model {
 
     static function updateCaseStatusAndReference($request, $ref_id,$case_id,$connection='drafts') {
         $case_reference = \App\CaseModel::where('id', $ref_id)->first();
+        $main_case = \App\CaseModel::find($case_id);
 
         if(trim($request->input('status')) == 'reinstated') {
             // update reinstated table
@@ -46,16 +47,20 @@ class HashCase extends Model {
             }
         }
 
-        if($case_reference) {
+        if($case_reference && $main_case) {
             if($request->has('case_parent') && $request->has('case_child')) {
                 $case_reference->status = 'not_controlling';
+                $main_case->status = 'controlling';
             } else if($request->has('case_parent') && !$request->has('case_child')) {
                 $case_reference->status = 'not_controlling';
-            } else {
-                $case_reference->status = 'controlling';
+                $main_case->status = 'controlling';
+            } else if(!$request->has('case_parent') && $request->has('case_child')) {
+                $case_reference->status = 'not_controlling';
+                $main_case->status = 'controlling';
             }
             // $case_reference->status = $status;
             $case_reference->save();
+            $main_case->save();
         }
     }
 
