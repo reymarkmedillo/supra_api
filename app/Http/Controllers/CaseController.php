@@ -270,6 +270,23 @@ class CaseController extends Controller
         $categories = \App\Category::where('parent_id', $parent)->select('id',\DB::raw("name as text"))->get();
         return response()->json(['categories' => $categories]);
     }
+    
+    public function getAllCategory() {
+        $categories = \App\Category::select('id',\DB::raw("name as text"))->get();
+        return response()->json(['categories' => $categories]);
+    }
+
+    public function createCategory(Request $request) {
+        $category = new \App\Category;
+
+        $category->id = str_random(11);
+        $category->parent_id = $request->input('cat_parent');
+        $category->name = $request->input('cat_child');
+        $category->created_at = \Carbon\Carbon::now();
+        $category->updated_at = \Carbon\Carbon::now();
+        $category->save();
+        return response()->json(['message' => 'Created Category Successfully.']);
+    }
 
     public function createDraftCase(Request $request) {
         $user = \App\User::find(\Auth::user()->user_id);

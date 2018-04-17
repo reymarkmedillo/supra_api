@@ -30,6 +30,8 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->get('v1/bookmarks/{user_id}', ['as' => 'getBookmarks', 'uses' => 'CaseController@getBookmarks']);
     // CATEGORY
     $app->get('v1/categories/{parent}', ['as' => 'getCategory', 'uses' => 'CaseController@getCategory']);
+    $app->get('v1/categories-all', ['as' => 'getAllCategory', 'uses' => 'CaseController@getAllCategory']);
+    $app->post('v1/categories-create', ['as' => 'createCategory', 'uses' => 'CaseController@createCategory']);
     // DELETE
     $app->get('v1/remove/{case_id}', ['as' => 'deleteCase', 'uses' => 'CaseController@deleteCase']);
     // ** DRAFT CASES **
