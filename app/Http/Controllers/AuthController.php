@@ -121,7 +121,7 @@ class AuthController extends Controller
 
     private function saveTokens($user, $request,$mobile=false) {
         $res = array();
-        $tokens     = $this->user->generateToken($request, true);
+        $tokens     = $this->user->generateToken($request, $mobile);
         $client    = ApiClient::where('name', $request->input('client_name'))->where('secret', $request->input('client_secret'))->firstOrFail();
         $profile = UserProfile::where('user_id', $user->id)->leftJoin('users as a', 'a.id', '=', 'user_profile.user_id')->first([
             'user_profile.id',
