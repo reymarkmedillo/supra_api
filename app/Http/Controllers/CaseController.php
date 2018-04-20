@@ -270,10 +270,35 @@ class CaseController extends Controller
         $categories = \App\Category::where('parent_id', $parent)->select('id',\DB::raw("name as text"))->get();
         return response()->json(['categories' => $categories]);
     }
+
+    public function getCategoryInfo($category_id) {
+        $category = \App\Category::find($category_id);
+        return response()->json(['category' => $category]);
+    }
+    
+    public function deleteCategoryInfo($category_id) {
+        $category = \App\Category::destroy($category_id);
+
+        return response()->json(['message' => "Deleted category successfully."]);
+    }
     
     public function getAllCategory() {
         $categories = \App\Category::select('id',\DB::raw("name as text"))->get();
         return response()->json(['categories' => $categories]);
+    }
+
+    public function updateCategoryInfo(Request $request, $category_id) {
+        $category = \App\Category::find($category_id);
+
+        if($request->has('cat_parent')) {
+            $category->parent_id = $request->input('cat_parent');
+        } else {
+            $category->parent_id = 0;
+        }
+        $category->name = $request->input('cat_child');
+        $category->updated_at = \Carbon\Carbon::now();
+        $category->save();
+        return response()->json(['message' => 'Updated Category Successfully.']);
     }
 
     public function createCategory(Request $request) {

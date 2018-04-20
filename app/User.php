@@ -34,7 +34,7 @@ class User extends Model implements
         'password',
     ];
 
-    public function generateToken() {
+    public function generateToken($request,$mobile=false) {
         \Log::info(date_default_timezone_get());
         $exdate = Carbon::parse(date("Y-m-d H:i:s"))->setTimezone('Asia/Manila');
         foreach(config('define.token_time.access') as $k => $v){
@@ -48,7 +48,7 @@ class User extends Model implements
         }
         
         return array(
-            'api_token'                  => str_random(75),
+            'api_token'                  => $mobile?$request->input('token'):str_random(75),
             'expired_date'               => $exdate->format('Y-m-d H:i:s'),
             'refresh_token'              => str_random(75),
             'refresh_token_expired_date' => $rt_exdate->format('Y-m-d H:i:s')
