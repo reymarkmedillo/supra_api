@@ -361,7 +361,7 @@ class CaseController extends Controller
             } else if($request->has('case_parent') && !$request->has('case_child')) {
                 $case_group->status = 'controlling';
             } else {
-                $case_group->status = 'not_controlling';
+                $case_group->status = $request->has('case_status')?$request->input('case_status'):'not_controlling';
             }
             
             $case_group->save();
@@ -401,7 +401,7 @@ class CaseController extends Controller
             } else if($request->has('case_parent') && !$request->has('case_child')) {
                 $case->status = 'controlling';
             } else {
-                $case->status = 'not_controlling';
+                $case->status = $request->has('case_status')?$request->input('case_status'):'not_controlling';
             }
 
             $case->save();
