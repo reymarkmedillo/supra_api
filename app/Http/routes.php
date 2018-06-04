@@ -34,7 +34,14 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     $app->get('v1/categories-remove/{category_id}', ['as' => 'deleteCategoryInfo', 'uses' => 'CaseController@deleteCategoryInfo']);
     $app->get('v1/categories-update/{category_id}', ['as' => 'updateCategoryInfo', 'uses' => 'CaseController@updateCategoryInfo']);
     $app->get('v1/categories-all', ['as' => 'getAllCategory', 'uses' => 'CaseController@getAllCategory']);
-    $app->post('v1/categories-create', ['as' => 'createCategory', 'uses' => 'CaseController@createCategory']);
+    $app->post(
+        'v1/categories-create', [
+        'as' => 'createCategory', 'uses' => 'CaseController@createCategory']
+    );
+    $app->get(
+        'v1/categories-tree', [
+        'as' => 'generateTreeView', 'uses' => 'CategoryController@generateTreeView']
+    );
     // DELETE
     $app->get('v1/remove/{case_id}', ['as' => 'deleteCase', 'uses' => 'CaseController@deleteCase']);
     // ** DRAFT CASES **

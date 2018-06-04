@@ -8,42 +8,79 @@ use App\CaseGroup;
 use App\UserHighlight;
 use App\CaseReference;
 
+/** 
+ * Main Case Controller
+ * 
+ * @category Case/Draft_Case
+ * @package  None
+ * @author   Rei <rmmedillo@gmail.com>
+ * @license  MIT http://opensource.org/licenses/MIT
+ * @link     api.tier-app.com
+ */
 class CaseController extends Controller
 {
     public function __construct()
     {
         //
     }
-
-    public function searchCase(Request $request) {
+    /**
+     * Search case for fields (grnum, title, topic, syllabus, case references)
+     *
+     * @param array $request formpost data
+     * 
+     * @return array
+     */
+    public function searchCase(Request $request) 
+    {
         $result = array();
         $res_gr = array();
         $res_title = array();
         $res_topic = array();
         $res_syllabus = array();
         $res_case_refs = array();
-        $this->validate($request, [
+        $this->validate(
+            $request, [
             'search' => 'required'
-        ]);
+            ]
+        );
         if ($request->has('search')) {
-            // *GR
-            $search_GR = CaseModel::where('grno','like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
-            if(count($search_GR)) {
+            // GR
+            $search_GR = CaseModel::where(
+                'grno', 'like', '%'. 
+                $request->input('search') .'%'
+            )
+            ->get(
+                [
+                    'id','grno','title','topic','scra','syllabus',
+                    'body','full_txt','status','short_title','date'
+                ]
+            );
+            if (count($search_GR)) {
                 $res_gr = $this->makeCaseArray($search_GR);
             }
             // FILTER ONLY GR
-            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('grno')) {
+            if ($request->has('filter') 
+                && strtolower($request->input('filter')) == strtolower('grno')
+            ) {
                 $result['grno'] = $res_gr;
                 return $result;
             }
 
-            // *TITLE
-            $search_title = CaseModel::where('title', 'like', '%'. $request->input('search') .'%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
-            if(count($search_title)) {
+            // TITLE
+            $search_title = CaseModel::where(
+                'title', 'like', '%'. 
+                $request->input('search') .'%'
+            )->get(
+                [
+                    'id','grno','title','topic','scra','syllabus',
+                    'body','full_txt','status','short_title','date'
+                ]
+            );
+            if (count($search_title)) {
                 $res_title = $this->makeCaseArray($search_title);
             }
             // FILTER ONLY TITLE
-            if($request->has('filter') && strtolower($request->input('filter')) == strtolower('title')) {
+            if ($request->has('filter') && strtolower($request->input('filter')) == strtolower('title')) {
                 $result['title'] = $res_title;
                 return $result;
             }
