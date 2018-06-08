@@ -319,8 +319,13 @@ class CaseController extends Controller
         return response()->json(['message' => "Deleted category successfully."]);
     }
     
-    public function getAllCategory() {
-        $categories = \App\Category::select('id',\DB::raw("name as text"))->get();
+    public function getAllCategory(Request $request) {
+        $categories = \App\Category::select('id', \DB::raw("name as text"));
+        if ($request->has('parent_id')) {
+            $categories = $categories->where('parent_id', $request->input('parent_id'))->get();
+        } else {
+            $categories = $categories->get();
+        }
         return response()->json(['categories' => $categories]);
     }
 
