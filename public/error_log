@@ -1,0 +1,5 @@
+[11-Jan-2018 13:24:42 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
+[14-Jan-2018 04:01:42 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
+[14-Jan-2018 04:03:05 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
+[14-Jan-2018 04:05:32 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
+[16-Jan-2018 07:09:29 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
