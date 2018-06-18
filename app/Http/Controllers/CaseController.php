@@ -347,7 +347,7 @@ class CaseController extends Controller
         $category = new \App\Category;
 
         $category->id = str_random(11);
-        $category->parent_id = $request->input('cat_parent');
+        $category->parent_id = $request->has('cat_parent')?$request->input('cat_parent'):0;
         $category->name = $request->input('cat_child');
         $category->created_at = \Carbon\Carbon::now();
         $category->updated_at = \Carbon\Carbon::now();
