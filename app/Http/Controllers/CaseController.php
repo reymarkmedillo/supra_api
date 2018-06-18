@@ -315,7 +315,7 @@ class CaseController extends Controller
     
     public function deleteCategoryInfo($category_id) {
         $category = \App\Category::destroy($category_id);
-        $delete_children = \App\Category::where('parent_id', $category_id)->delete();
+        // $delete_children = \App\Category::where('parent_id', $category_id)->delete();
 
         return response()->json(['message' => "Deleted category successfully."]);
     }
