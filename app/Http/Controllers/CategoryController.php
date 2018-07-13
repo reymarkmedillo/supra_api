@@ -101,14 +101,13 @@ class CategoryController extends Controller
         return $temp;
     }
     /**
-     * Get all cases based on their category
+     * Get all cases based on their category and return via list format to be used in html dropdown list
      *
      * @param $request $request ..
      * 
      * @return array
      */
     public function getCasesByCategory(Request $request) {
-        \Log::info($request->input('category_name'));
         $cases = \App\CaseModel::select('id',\DB::raw("CONCAT(grno,' ', IFNULL(short_title,'')) as text"))
         ->where('topic', 'LIKE', '%'.$request->input('category_name').'%')
         ->get();
