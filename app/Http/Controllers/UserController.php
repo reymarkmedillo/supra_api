@@ -20,12 +20,10 @@ class UserController extends Controller
         $token_user = User::find(\Auth::user()->user_id);
 
         if(!$user || !$auth_user) {
-            return response()->json(['msg' => 'error']);
+            return response()->json(['msg' => 'error'],401);
         }
         // "DISALLOW UPDATING OF USER IF NOT SUPER ADMIN"
         if( ($token_user->role != 'admin') && $token_user->id != $user_id ) {
-            return response()->json(['msg' => 'error']);
-        } elseif($token_user->role == 'admin' && !empty($token_user->user_role_function)) {
             return response()->json(['msg' => 'error']);
         }
 
@@ -88,9 +86,12 @@ class UserController extends Controller
         $profile['auth_type'] = $auth_user->auth_type;
         $profile['payment_method'] = $user->payment_method;
         $profile['premium'] = $user->premium;
+        $profile['subscription_startdate'] = $user->subscription_startdate;
+        $profile['subscription_enddate'] = $user->subscription_enddate;
         $profile['role'] = $auth_user->role;
         $profile['user_role_function'] = $auth_user->user_role_function;
         $profile['user_subscription'] = (isset($user_subscription_startdate) && isset($user_subscription_enddate))?$user_subscription_startdate->diffInDays($user_subscription_enddate):null;
+        $profile['auth_type'] = $auth_user->auth_type;
         return response()->json(['msg'=>'success', 'user_profile' => $profile]);
     }
 
