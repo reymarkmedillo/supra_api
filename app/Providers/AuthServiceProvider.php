@@ -36,7 +36,7 @@ class AuthServiceProvider extends ServiceProvider
             if ($request->headers->get('Authorization')) {
                 $header = $request->headers->get('Authorization');
                 $access_token = str_replace('Bearer ','',$header);
-                \Log::info('access_token =>'.$access_token);
+
                 return AccessToken::where('api_token', $access_token)->first();
             }
         });

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Route;
 use App\User;
+use App\AccessToken;
 use App\Http\Middleware\BeforeMiddleware;
 
 class Authenticate
@@ -44,7 +45,9 @@ class Authenticate
             if ($this->auth->check()) {
                 // this area is not yet used
                 $access_token = $this->auth->guard($guard)->user();
+
                 if($request->route()[1]['uses'] != 'auth.refresh' && strtotime($access_token->expires_at) < time()) {
+                    AccessToken::where('api_token', $access_token->api_token)->delete();
                     return response()->json(['message' => 'Unauthorized. [2]'], 401);
                 }
 
