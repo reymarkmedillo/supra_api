@@ -35,7 +35,6 @@ class User extends Model implements
     ];
 
     public function generateToken($request,$mobile=false) {
-        \Log::info(date_default_timezone_get());
         $exdate = Carbon::parse(date("Y-m-d H:i:s"))->setTimezone('Asia/Manila');
         foreach(config('define.token_time.access') as $k => $v){
             if($v == 0)continue;
