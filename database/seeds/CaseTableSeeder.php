@@ -13,7 +13,7 @@ class CaseTableSeeder extends Seeder
     {
         DB::table('cases')->insert([
             'title'            => "HEDY GAN y YU, Petitioner vs THE HONORABLE COURT OF APPEALS and the PEOPLE OF THE PHILIPPINES, Respondents",
-            'scra'             => "",
+            'scra'  => null,
             'grno'  => "G.R No. L-44264",
             'date' => '1988-09-19',
             'createdBy' => 2,
@@ -60,7 +60,7 @@ criminal negligence in connection with the incident under consideration.",
 
         DB::table('cases')->insert([
             'title'              => "AMADO PICART, plaintiff-appellant vs. FRANK SMITH, JR., defendant- appellee",
-            'scra'             => "",
+            'scra'             => null,
             'grno'  => "G.R No. L-12219",
             'date' => '1918-03-15',
             'createdBy' => 2,
@@ -145,7 +145,7 @@ own negligence in selecting his employee.",
 
         DB::table('cases')->insert([
             'title'     => "PORFIRIO P. CINCO, petitioner-appellant vs. MATEO CANONOY, et. Al, respondents-appellees.",
-            'scra'      => "",
+            'scra'      => null,
             'grno'      => "G.R No. L-33171",
             'date'      => "1997-09-01",
             'createdBy' => 1,
@@ -281,7 +281,7 @@ Damages are proper.",
 
         DB::table('cases')->insert([
             'title'     => "C. S. GILCHRIST, plaintiff-appellee vs. E. A. CUDDY, ET AL., defendants. JOSE FERNANDEZ ESPEJO and MARIANO ZALDARRIAGA, appellants",
-            'scra'      => "",
+            'scra'      => null,
             'grno'      => "G.R No. L-9356",
             'date'      => "1915-02-18",
             'createdBy' => 1,
@@ -323,7 +323,7 @@ unless some superior right by contract or otherwise is interfered with.&quot;",
 
         DB::table('cases')->insert([
             'title'     => "EMMA ADRIANO BUSTAMANTE, et. Al,  petitioners vs. THE HONORABLE COURT OF APPEALS, FEDERICO DEL PILAR AND EDILBERTO MONTESIANO,respondents",
-            'scra'      => "",
+            'scra'      => null,
             'grno'      => "89880",
             'date'      => "1991-02-06",
             'createdBy' => 1,
@@ -363,7 +363,7 @@ that another had negligently failed to take action which could have avoided the 
 
         DB::table('cases')->insert([
             'title'     => "THE SPOUSES BERNABE AFRICA and SOLEDAD C. AFRICA, and the HEIRS OF DOMINGA ONG, petitioners-appellants vs. CALTEX (PHIL.), INC., MATEO BOQUIREN and THE COURT OF APPEALS, respondents-appellees",
-            'scra'      => "",
+            'scra'      => null,
             'grno'      => "G.R No. L-12986",
             'date'      => "1966-03-31",
             'createdBy' => 1,
@@ -404,7 +404,7 @@ most and cannot prevent the flames from leaping over it in case of fire.",
 
         DB::table('cases')->insert([
             'title'     => "MERCEDES M. TEAGUE, petitioner vs. ELENA FERNANDEZ, et al., respondent",
-            'scra'      => "",
+            'scra'      => null,
             'grno'      => "G.R No. L-29745",
             'date'      => "1973-06-04",
             'createdBy' => 1,

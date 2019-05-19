@@ -254,4 +254,10 @@ class AuthController extends Controller
         return response()->json(['message'=> 'There is some problem with your request.']);
     }
 
+    public function getClearAll(Request $request) {
+        // clear expired tokens
+        AccessToken::where('expires_at','<', \Carbon\Carbon::now())->delete();
+        return response()->json(['message'=>'cleared.']);
+    }
+
 }
