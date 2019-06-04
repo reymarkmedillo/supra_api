@@ -45,12 +45,17 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     );
     // DELETE
     $app->get('v1/remove/{case_id}', ['as' => 'deleteCase', 'uses' => 'CaseController@deleteCase']);
-    // ** DRAFT CASES **
+    // ** DRAFT/APPROVED CASES **
     //LIST
     $app->get('v1/drafts/list-case', ['as' => 'listDraftCase', 'uses' => 'CaseController@listDraftCase']);
     $app->get('v1/drafts/list-dropdown-case', ['as' => 'listDropdownDraftCase', 'uses' => 'CaseController@listDropdownDraftCase']);
     // CREATE
     $app->post('v1/drafts/create-case', ['as' => 'createDraftCase', 'uses' => 'CaseController@createDraftCase']);
+        // XGR
+        $app->post('v1/case/approved/create-xgr', ['as' => 'createCaseXgr', 'uses' => 'CaseXgrController@createCaseXgr']);
+        $app->post('v1/case/approved/view-xgr', ['as' => 'viewCaseXgr', 'uses' => 'CaseXgrController@viewCaseXgr']);
+    // READ
+    $app->get('v1/case/approved/view-xgr', ['as' => 'getCaseXgr', 'uses' => 'CaseXgrController@getCaseXgr']);
     // UPDATE
     $app->post('v1/drafts/update-case/{case_id}', ['as' => 'updateDraftCase', 'uses' => 'CaseController@updateDraftCase']);
     // APPROVE/DISAPPROVE

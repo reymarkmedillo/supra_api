@@ -150,9 +150,9 @@ class CaseController extends Controller
         $res['grno'] = $value->grno;
         $res['title'] = $value->title;
         $res['scra'] = $value->scra;
-        $res['topic'] = $value->topic;
-        $res['syllabus'] = $value->syllabus;
-        $res['body'] = $value->body;
+        // $res['topic'] = $value->topic;
+        // $res['syllabus'] = $value->syllabus;
+        // $res['body'] = $value->body;
         $res['full_txt'] = $value->full_txt;
         $res['status'] = $value->status;
         $res['short_title'] = $value->short_title;
@@ -434,9 +434,9 @@ class CaseController extends Controller
             $case->grno = $request->input('gr');
             $case->scra = $request->input('scra');
             $case->date = date('Y-m-d', strtotime($request->input('date')));
-            $case->topic = \App\HashCase::getTopicNames($request->input('topic'));
-            $case->syllabus = $request->input('syllabus');
-            $case->body = $request->input('body');
+            // $case->topic = \App\HashCase::getTopicNames($request->input('topic'));
+            // $case->syllabus = $request->input('syllabus');
+            // $case->body = $request->input('body');
             $case->full_txt = $request->input('fulltxt');
             $case->createdBy = \Auth::user()->user_id;
             if($request->has('case_parent') && $request->has('case_child')) {
