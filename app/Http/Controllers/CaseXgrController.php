@@ -33,14 +33,27 @@ class CaseXgrController extends Controller
      * @return array
      */
     public function createCaseXgr(Request $request) {
-        $xgr = new \App\CaseXgr;
 
-        $xgr->grno = $request->input('grno');
-        $xgr->topic = $request->input('topic');
-        $xgr->syllabus = $request->input('syllabus');
-        $xgr->body = $request->input('body');
+        if($request->has('grno')) {
+            $xgr = \App\CaseXgr::where('grno', $request->input('grno'))->where('topic', $request->input('topic'))
+            ->first();
 
-        $xgr->save();
+            if($xgr) {
+                $xgr->syllabus = $request->input('syllabus');
+                $xgr->body = $request->input('body');
+
+                $xgr->save();
+            } else {
+                $xgr = new \App\CaseXgr;
+
+                $xgr->grno = $request->input('grno');
+                $xgr->topic = $request->input('topic');
+                $xgr->syllabus = $request->input('syllabus');
+                $xgr->body = $request->input('body');
+
+                $xgr->save();
+            }
+        }
 
         return response()->json(['message' => 'Saved Successfully.']);
     }
@@ -53,7 +66,15 @@ class CaseXgrController extends Controller
      * @return array
      */
     public function viewCaseXgr(Request $request) {
-        
+        if($request->has('grno')) {
+            $xgr = \App\CaseXgr::where('grno', $request->input('grno'))->where('topic', $request->input('topic'))
+            ->first();
 
+            if($xgr) {
+                return response()->json(['message'=>'Successful.', 'xgr'=>$xgr]);
+            }
+        }
+
+        return response()->json(['message'=>'No data found.', 'xgr'=>array() ]);
     }
 }

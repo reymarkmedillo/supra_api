@@ -52,8 +52,8 @@ $app->group(['middleware' => ['before', 'auth:api'], 'namespace' => 'App\Http\Co
     // CREATE
     $app->post('v1/drafts/create-case', ['as' => 'createDraftCase', 'uses' => 'CaseController@createDraftCase']);
         // XGR
-        $app->post('v1/case/approved/create-xgr', ['as' => 'createCaseXgr', 'uses' => 'CaseXgrController@createCaseXgr']);
-        $app->post('v1/case/approved/view-xgr', ['as' => 'viewCaseXgr', 'uses' => 'CaseXgrController@viewCaseXgr']);
+        $app->post('v1/case/create-xgr', ['as' => 'createCaseXgr', 'uses' => 'CaseXgrController@createCaseXgr']);
+        $app->post('v1/case/view-xgr', ['as' => 'viewCaseXgr', 'uses' => 'CaseXgrController@viewCaseXgr']);
     // READ
     $app->get('v1/case/approved/view-xgr', ['as' => 'getCaseXgr', 'uses' => 'CaseXgrController@getCaseXgr']);
     // UPDATE
