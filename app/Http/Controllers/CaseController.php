@@ -86,7 +86,9 @@ class CaseController extends Controller
             }
 
             // *TOPIC
-            $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
+            $search_topic = CaseModel::where('a.topic', 'like', '%'. $request->input('search') . '%')
+            ->leftJoin('xgr as a', 'a.grno','=','cases.grno')
+            ->get(['cases.id','cases.grno','title','scra','full_txt','status','short_title','date']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
             }
@@ -97,7 +99,9 @@ class CaseController extends Controller
             }
 
             // *SYLLABUS
-            $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')->get(['id','grno','title','topic','scra','syllabus','body','full_txt','status','short_title','date']);
+            $search_syllabus = CaseModel::where('a.syllabus', 'like', '%'. $request->input('search') . '%')
+            ->leftJoin('xgr as a', 'a.grno','=','cases.grno')
+            ->get(['cases.id','cases.grno','title','scra','full_txt','status','short_title','date']);
             if(count($search_syllabus)) {
                 $res_syllabus = $this->makeCaseArray($search_syllabus);
             }
@@ -135,6 +139,7 @@ class CaseController extends Controller
                 $res = $this->hashCase($value,$draft);
                 $res = $this->getChildParentCase($res, $draft);
                 array_push($final, $res);
+
                 $res = array();
             }
             return $final;
@@ -161,6 +166,7 @@ class CaseController extends Controller
             $res['approved'] = $value->approved;
         }
         $res['deleted_at'] = $value->deleted_at;
+        $res ['xgr'] = $this->getArrayTopicSyllabusBody($value);
 
         return $res;
     }
@@ -198,6 +204,22 @@ class CaseController extends Controller
         }
 
         return $res;
+    }
+
+    // added by Rey 15/06/2019
+    public function getArrayTopicSyllabusBody($value) {
+        $ret = array();
+
+        if(isset($value->grno)) {
+            $xgrs = \App\CaseXgr::where('grno', trim($value->grno))->get(['topic','syllabus','body']);
+
+            if($xgrs) {
+                $ret = $xgrs;
+                return $ret;
+            }
+        }
+
+        return $ret;
     }
 
     public function viewCase($id) {
