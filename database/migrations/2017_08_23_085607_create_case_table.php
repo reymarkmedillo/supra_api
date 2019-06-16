@@ -16,7 +16,7 @@ class CreateCaseTable extends Migration
             $table->increments('id');
             $table->mediumText('title');
             $table->mediumText('short_title')->nullable();
-            $table->string('scra')->unique()->nullable();
+            $table->string('scra')->nullable();
             $table->string('grno');
             $table->date('date')->default(\Carbon\Carbon::now());
             $table->mediumText('topic')->nullable();
