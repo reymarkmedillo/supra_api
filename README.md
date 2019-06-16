@@ -22,3 +22,8 @@ The Lumen framework is open-sourced software licensed under the [MIT license](ht
 
 ## How to run the program
 php -S localhost:8000 -t public
+
+## Version 5.0.1
+- Added saving of multiple topics,syllabus,body per GR number
+- Update the json result to include xgr
+- Add xgr migration
