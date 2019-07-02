@@ -35,7 +35,7 @@ class CaseXgrController extends Controller
     public function createCaseXgr(Request $request) {
 
         if($request->has('grno')) {
-            $xgr = \App\CaseXgr::where('grno', $request->input('grno'))->where('topic', $request->input('topic'))
+            $xgr = \App\CaseXgr::where('grno', trim($request->input('grno')))->where('topic', trim($request->input('topic')))
             ->first();
 
             if($xgr) {
@@ -46,8 +46,8 @@ class CaseXgrController extends Controller
             } else {
                 $xgr = new \App\CaseXgr;
 
-                $xgr->grno = $request->input('grno');
-                $xgr->topic = $request->input('topic');
+                $xgr->grno = trim($request->input('grno'));
+                $xgr->topic = trim($request->input('topic'));
                 $xgr->syllabus = $request->input('syllabus');
                 $xgr->body = $request->input('body');
 
@@ -67,7 +67,7 @@ class CaseXgrController extends Controller
      */
     public function viewCaseXgr(Request $request) {
         if($request->has('grno')) {
-            $xgr = \App\CaseXgr::where('grno', $request->input('grno'))->where('topic', $request->input('topic'))
+            $xgr = \App\CaseXgr::where('grno', trim($request->input('grno')))->where('topic', trim($request->input('topic')))
             ->first();
 
             if($xgr) {

@@ -519,7 +519,24 @@ class CaseController extends Controller
             $case->date = date('Y-m-d', strtotime($request->input('date')));
         }
         if($request->has('topic')) {
-            $case->topic = \App\HashCase::getTopicNames($request->input('topic'));
+            $topics = explode(',', $request->input('topic'));
+
+            if($topics) {
+                foreach($topics as $topic) {
+                    $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
+
+                    if(!$xgr) {
+                        $xgr = new \App\CaseXgr;
+
+                        $xgr->grno = trim($request->input('gr'));
+                        $xgr->topic = trim($topic);
+                        $xgr->syllabus = '';
+                        $xgr->body = '';
+
+                        $xgr->save();
+                    }
+                }
+            }
         }
         if($request->has('syllabus')) {
             $case->syllabus = $request->input('syllabus');
