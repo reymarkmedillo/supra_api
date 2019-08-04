@@ -91,6 +91,12 @@ class CaseController extends Controller
             ->get(['cases.id','cases.grno','title','scra','full_txt','status','short_title','date']);
             if(count($search_topic)) {
                 $res_topic = $this->makeCaseArray($search_topic);
+            } else {
+                $search_topic = CaseModel::where('topic', 'like', '%'. $request->input('search') . '%')
+                ->get(['id','grno','title','scra','full_txt','status','short_title','date']);
+                if(count($search_topic)) {
+                    $res_topic = $this->makeCaseArray($search_topic);
+                }
             }
             // FILTER ONLY TITLE
             if($request->has('filter') && strtolower($request->input('filter')) == strtolower('topic')) {
@@ -104,6 +110,13 @@ class CaseController extends Controller
             ->get(['cases.id','cases.grno','title','scra','full_txt','status','short_title','date']);
             if(count($search_syllabus)) {
                 $res_syllabus = $this->makeCaseArray($search_syllabus);
+            } else {
+                $search_syllabus = CaseModel::where('syllabus', 'like', '%'. $request->input('search') . '%')
+                ->get(['id','grno','title','scra','full_txt','status','short_title','date']);
+
+                if(count($search_syllabus)) {
+                    $res_syllabus = $this->makeCaseArray($search_syllabus);
+                }
             }
             // FILTER ONLY SYLLABUS
             if($request->has('filter') && strtolower($request->input('filter')) == strtolower('syllabus')) {
@@ -211,10 +224,30 @@ class CaseController extends Controller
         $ret = array();
 
         if(isset($value->grno)) {
-            $xgrs = \App\CaseXgr::where('grno', trim($value->grno))->get(['topic','syllabus','body']);
+            $xgrs = \App\CaseXgr::where('grno', trim($value->grno));
 
-            if($xgrs) {
-                $ret = $xgrs;
+            if($xgrs->count()) {
+                $ret = $xgrs->get(['topic','syllabus','body']);
+                return $ret;
+            } else {
+                $old_xgr = \App\CaseModel::where('grno', trim($value->grno));
+                if($old_xgr->count()) {
+                    $old_xgr_temp = array();
+                    $old_xgr_container = array();
+
+                    $old_xgr_row = $old_xgr->first(['topic','syllabus','body']);
+                    $old_xgr_topics = explode(',', $old_xgr_row->topic);
+
+                    foreach ($old_xgr_topics as $value) {
+                        $old_xgr_temp['topic'] = trim($value);
+                        $old_xgr_temp['syllabus'] = $old_xgr_row->syllabus;
+                        $old_xgr_temp['body'] = $old_xgr_row->body;
+
+                        array_push($old_xgr_container, $old_xgr_temp);
+                    }
+
+                    $ret = $old_xgr_container;
+                }
                 return $ret;
             }
         }
