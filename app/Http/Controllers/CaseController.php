@@ -555,10 +555,16 @@ class CaseController extends Controller
             $topics = explode(',', $request->input('topic'));
 
             if($topics) {
-                foreach($topics as $topic) {
-                    $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
+                // updated on August 25, 2019 by Rey
+                $xgrs = \App\CaseXgr::where('grno', trim($request->input('gr')));
+                if($xgrs->count()) {
+                    $xgrs->delete();
+                }
 
-                    if(!$xgr) {
+                foreach($topics as $topic) {
+                    // $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
+
+                    // if(!$xgr) {
                         $xgr = new \App\CaseXgr;
 
                         $xgr->grno = trim($request->input('gr'));
@@ -567,8 +573,8 @@ class CaseController extends Controller
                         $xgr->body = '';
 
                         $xgr->save();
-                    }
-                }
+                // }
+                }  
             }
         }
         if($request->has('syllabus')) {
