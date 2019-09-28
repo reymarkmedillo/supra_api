@@ -3,3 +3,4 @@
 [14-Jan-2018 04:03:05 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
 [14-Jan-2018 04:05:32 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
 [16-Jan-2018 07:09:29 UTC] PHP Fatal error:  Class 'Illuminate\Mail\MailServiceProvider' not found in /home1/makupasc/public_html/api/vendor/laravel/lumen-framework/src/Application.php on line 163
+[07-Jul-2019 10:58:27 UTC] PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0

@@ -1,5 +1,5 @@
 # Use PHP5.6 as default
-AddHandler application/x-httpd-php56 .php
+# AddHandler application/x-httpd-php56 .php
 RewriteEngine On
 
 RewriteCond %{HTTP:Authorization} ^(.*)
@@ -7,3 +7,60 @@ RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]
 RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+
+RewriteCond %{HTTP_REFERER} !^http://admin.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://admin.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://api.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://api.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://s8u6543879.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://s8u6543879.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://testserver.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://testserver.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://tier.website/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://tier.website$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.admin.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.admin.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.api.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.api.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.s8u6543879.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.s8u6543879.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.testserver.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.testserver.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.tier.website/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.tier.website$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://admin.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://admin.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://api.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://api.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://s8u6543879.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://s8u6543879.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://testserver.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://testserver.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://tier.website/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://tier.website$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.admin.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.admin.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.api.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.api.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.s8u6543879.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.s8u6543879.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.testserver.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.testserver.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.tier-app.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.tier-app.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.tier.website/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.tier.website$      [NC]
+RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php56” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php56 .php .php5 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

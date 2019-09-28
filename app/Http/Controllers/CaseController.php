@@ -555,16 +555,10 @@ class CaseController extends Controller
             $topics = explode(',', $request->input('topic'));
 
             if($topics) {
-                // updated on August 25, 2019 by Rey
-                $xgrs = \App\CaseXgr::where('grno', trim($request->input('gr')));
-                if($xgrs->count()) {
-                    $xgrs->delete();
-                }
+		foreach($topics as $topic) {
+                    $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
 
-                foreach($topics as $topic) {
-                    // $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
-
-                    // if(!$xgr) {
+                    if(!$xgr) {
                         $xgr = new \App\CaseXgr;
 
                         $xgr->grno = trim($request->input('gr'));
@@ -573,8 +567,22 @@ class CaseController extends Controller
                         $xgr->body = '';
 
                         $xgr->save();
-                // }
-                }  
+                    }
+                }
+		// add checking if the database value does not exist in request post values
+                $xgrs = \App\CaseXgr::where('grno', trim($request->input('gr')))->get();
+                foreach($xgrs as $xgr) {
+                    // check database xgr still exist
+                    if(in_array($xgr->topic, array_map('trim',$topics))) {
+		    } else {
+                        \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', $xgr->topic)->delete();
+                    }
+                }
+            }
+        } else {
+            $xgrs = \App\CaseXgr::where('grno', trim($request->input('gr')));
+            if($xgrs->count()) {
+                $xgrs->delete();
             }
         }
         if($request->has('syllabus')) {
