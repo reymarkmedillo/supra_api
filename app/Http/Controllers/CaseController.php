@@ -459,7 +459,7 @@ class CaseController extends Controller
             } else if($request->has('case_parent') && !$request->has('case_child')) {
                 $case_group->status = 'controlling';
             } else {
-                $case_group->status = $request->has('case_status')?$request->input('case_status'):'not_controlling';
+                $case_group->status = $request->has('status')?$request->input('status'):'not_controlling';
             }
             
             $case_group->save();
@@ -499,7 +499,30 @@ class CaseController extends Controller
             } else if($request->has('case_parent') && !$request->has('case_child')) {
                 $case->status = 'controlling';
             } else {
-                $case->status = $request->has('case_status')?$request->input('case_status'):'not_controlling';
+                $case->status = $request->has('status')?$request->input('status'):'not_controlling';
+            }
+
+            // ADD TO XGR table
+            if($request->has('topic')) {
+                $topics = explode(',', $request->input('topic'));
+
+                if($topics) {
+                    foreach($topics as $topic_id) {
+                        $topic = \App\Category::find($topic_id);
+                        $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic->name))->first();
+
+                        if(!$xgr) {
+                            $xgr = new \App\CaseXgr;
+
+                            $xgr->grno = trim($request->input('gr'));
+                            $xgr->topic = trim($topic->name);
+                            $xgr->syllabus = '';
+                            $xgr->body = '';
+
+                            $xgr->save();
+                        }
+                    }
+                }
             }
 
             $case->save();
@@ -555,7 +578,7 @@ class CaseController extends Controller
             $topics = explode(',', $request->input('topic'));
 
             if($topics) {
-		foreach($topics as $topic) {
+		        foreach($topics as $topic) {
                     $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
 
                     if(!$xgr) {
@@ -569,12 +592,12 @@ class CaseController extends Controller
                         $xgr->save();
                     }
                 }
-		// add checking if the database value does not exist in request post values
+		        // add checking if the database value does not exist in request post values
                 $xgrs = \App\CaseXgr::where('grno', trim($request->input('gr')))->get();
                 foreach($xgrs as $xgr) {
                     // check database xgr still exist
                     if(in_array($xgr->topic, array_map('trim',$topics))) {
-		    } else {
+    		        } else {
                         \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', $xgr->topic)->delete();
                     }
                 }
@@ -709,6 +732,7 @@ class CaseController extends Controller
 
     public function deleteCase($case_id) {
         $case = CaseModel::find($case_id);
+        \App\CaseXgr::where('grno', $case->grno)->delete();
         if(!$case) {
             return response()->json(['message' => 'Record not found.'],422);
         }
