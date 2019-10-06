@@ -239,11 +239,13 @@ class CaseController extends Controller
                     $old_xgr_topics = explode(',', $old_xgr_row->topic);
 
                     foreach ($old_xgr_topics as $value) {
-                        $old_xgr_temp['topic'] = trim($value);
-                        $old_xgr_temp['syllabus'] = $old_xgr_row->syllabus;
-                        $old_xgr_temp['body'] = $old_xgr_row->body;
+                        if(empty($value)) {} else {
+                            $old_xgr_temp['topic'] =  trim($value);
+                            $old_xgr_temp['syllabus'] = $old_xgr_row->syllabus;
+                            $old_xgr_temp['body'] = $old_xgr_row->body;
 
-                        array_push($old_xgr_container, $old_xgr_temp);
+                            array_push($old_xgr_container, $old_xgr_temp);
+                        }
                     }
 
                     $ret = $old_xgr_container;
