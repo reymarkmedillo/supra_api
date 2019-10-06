@@ -224,7 +224,7 @@ class CaseController extends Controller
         $ret = array();
 
         if(isset($value->grno)) {
-            $xgrs = \App\CaseXgr::where('grno', trim($value->grno));
+            $xgrs = \App\CaseXgr::where('grno', trim($value->grno))->orderBy('created_at', 'desc');
 
             if($xgrs->count()) {
                 $ret = $xgrs->get(['topic','syllabus','body']);
