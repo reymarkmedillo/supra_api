@@ -507,15 +507,15 @@ class CaseController extends Controller
                 $topics = explode(',', $request->input('topic'));
 
                 if($topics) {
-                    foreach($topics as $topic_id) {
-                        $topic = \App\Category::find($topic_id);
-                        $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic->name))->first();
+                    foreach($topics as $topic) {
+                        // $topic = \App\Category::find($topic_id);
+                        $xgr = \App\CaseXgr::where('grno', trim($request->input('gr')))->where('topic', trim($topic))->first();
 
                         if(!$xgr) {
                             $xgr = new \App\CaseXgr;
 
                             $xgr->grno = trim($request->input('gr'));
-                            $xgr->topic = trim($topic->name);
+                            $xgr->topic = trim($topic);
                             $xgr->syllabus = '';
                             $xgr->body = '';
 
